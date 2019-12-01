@@ -1,4 +1,6 @@
-export class TableFunction {
+import { ICompare } from './compare-interface';
+
+export class TableFunction implements ICompare {
 
   public readonly funcName: string;
   public readonly funcType: string;
@@ -8,7 +10,11 @@ export class TableFunction {
     Object.assign(this, val);
   }
 
-  public compare(other: TableFunction): boolean {
+  toDDLString(): string {
+    return this.funcBody;
+  }
+
+  compare(other: TableFunction): boolean {
     return this.funcBody.toLowerCase() === other.funcBody.toLowerCase();
   }
 

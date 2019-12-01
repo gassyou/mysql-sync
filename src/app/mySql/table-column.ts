@@ -1,4 +1,6 @@
-export class TableColumn {
+import { ICompare } from './compare-interface';
+
+export class TableColumn implements ICompare {
 
   public readonly tableName: string;
   public readonly columnName: string;
