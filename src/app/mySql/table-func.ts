@@ -1,6 +1,9 @@
-import { ICompare } from './compare-interface';
+import { IComparable } from './comparable-interface';
+import { DomainEvent } from '../common/domain-event';
+import { IDifference } from './difference-interface';
 
-export class TableFunction implements ICompare {
+
+export class TableFunction implements IComparable {
 
   public readonly funcName: string;
   public readonly funcType: string;
@@ -14,8 +17,16 @@ export class TableFunction implements ICompare {
     return this.funcBody;
   }
 
-  compare(other: TableFunction): boolean {
-    return this.funcBody.toLowerCase() === other.funcBody.toLowerCase();
+  findDiff(other: TableFunction): boolean {
+
+    if (other === null) {
+      DomainEvent.getInstance().raise({left: this, right: other});
+      return true;
+    } else if ( this.toDDLString().toUpperCase() !== other.toDDLString().toUpperCase()) {
+      DomainEvent.getInstance().raise({left: this, right: other});
+      return true;
+    }
+    return false;
   }
 
 }

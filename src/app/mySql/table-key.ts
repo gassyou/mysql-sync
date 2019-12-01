@@ -1,7 +1,8 @@
 import { TableKeyType } from './table-key-type';
-import { ICompare } from './compare-interface';
+import { IComparable } from './comparable-interface';
+import { DomainEvent } from '../common/domain-event';
 
-export class TableKey implements ICompare {
+export class TableKey implements IComparable {
 
   public readonly tableName: string;
   public readonly keyName: string;
@@ -17,7 +18,7 @@ export class TableKey implements ICompare {
   public toDDLString(): string {
 
     if (this.keyType === TableKeyType.PRIMARY_KEY) {
-      return TableKeyType.PRIMARY_KEY + ' ' + this.keyName + ' ( ' + this.keyColumns.join(',') + ' )';
+      return TableKeyType.PRIMARY_KEY  + ' ( ' + this.keyColumns.join(',') + ' )';
     }
 
     if (this.keyType === TableKeyType.UNIQUE_KEY) {
@@ -36,8 +37,15 @@ export class TableKey implements ICompare {
     return '';
   }
 
-  public compare( other: TableKey): boolean {
-    return this.toDDLString().toUpperCase() === other.toDDLString().toUpperCase();
+  public findDiff( other: TableKey): boolean  {
+    if (other === null) {
+      DomainEvent.getInstance().raise({left: this, right: other});
+      return true;
+    } else if ( this.toDDLString().toUpperCase() !== other.toDDLString().toUpperCase()) {
+      DomainEvent.getInstance().raise({left: this, right: other});
+      return true;
+    }
+    return false;
   }
 
 }

@@ -1,9 +1,9 @@
-import { ICompare } from './compare-interface';
+import { IComparable } from './comparable-interface';
 
 export interface IDifference {
 
-  left: ICompare;
-  right: ICompare;
+  left: IComparable;
+  right: IComparable;
 
   syncToLeftSql(): string;
 

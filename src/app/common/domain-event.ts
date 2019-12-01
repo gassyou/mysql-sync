@@ -2,7 +2,7 @@
 export type EventAction = (eventArgs: any) => void;
 
 
-export default class DomainEvent {
+export class DomainEvent {
 
   private static readonly instance: DomainEvent = new DomainEvent();
 
