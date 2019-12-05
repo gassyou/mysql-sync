@@ -9,12 +9,16 @@ import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { registerLocaleData } from '@angular/common';
 import zh from '@angular/common/locales/zh';
+import { DbConnectionComponent } from './db-connection/db-connection.component';
+import { CompareComponent } from './compare/compare.component';
 
 registerLocaleData(zh);
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    DbConnectionComponent,
+    CompareComponent
   ],
   imports: [
     BrowserModule,

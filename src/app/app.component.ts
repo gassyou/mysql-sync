@@ -3,14 +3,12 @@ import { TableKeyType } from './mySql/table-key-type';
 
 @Component({
   selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.less']
+  template: `<router-outlet></router-outlet>`,
 })
 export class AppComponent implements OnInit {
 
   title = 'mysql-sync';
 
   ngOnInit(): void {
-    console.log(TableKeyType.PRIMARY_KEY);
   }
 }

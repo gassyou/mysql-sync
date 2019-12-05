@@ -1,6 +1,5 @@
 import { IComparable } from './comparable-interface';
 import { DomainEvent } from '../common/domain-event';
-import { runInThisContext } from 'vm';
 
 export class TableColumn implements IComparable {
 

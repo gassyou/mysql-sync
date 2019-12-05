@@ -30,6 +30,7 @@ export class DiffOfTableFunc implements IDifference {
     }
 
     return returnValue.toUpperCase();
+  }
 
 
 }
