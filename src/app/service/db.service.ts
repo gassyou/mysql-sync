@@ -1,9 +1,12 @@
 import { Injectable } from '@angular/core';
+import { Connection, ConnectionConfig, FieldInfo, MysqlError } from 'mysql';
+import { Observable } from 'rxjs';
+const mysql = require('mysql');
 
 @Injectable({
   providedIn: 'root'
 })
-export class FetchTablesSchemaService {
+export class DbService {
 
   private ALL_TABLES_SQL = 'show tables';
   private TABLE_DDL_SQL = 'show create table ?';
@@ -43,7 +46,28 @@ export class FetchTablesSchemaService {
                           and
                             INDEX_NAME != 'primary'`;
 
+
+
+
   constructor() { }
+
+  createConnection(config: ConnectionConfig): Connection {
+    return mysql.createConnection(config);
+  }
+
+  query(connection: Connection, queryString: string, values?: string[]): Observable<{results?: object[], fields?: FieldInfo[]}> {
+    return new Observable(observer => {
+      connection.query(queryString, values, (err: MysqlError, results?: object[], fields?: FieldInfo[]) => {
+        if (err) {
+          observer.error(err);
+        } else {
+          observer.next({ results, fields });
+        }
+        observer.complete();
+      });
+    });
+  }
+
 
 
 
