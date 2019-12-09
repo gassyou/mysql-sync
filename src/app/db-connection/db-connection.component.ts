@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { CompareService } from '../service/compare.service';
 
 @Component({
   selector: 'app-db-connection',
@@ -7,9 +8,17 @@ import { Component, OnInit } from '@angular/core';
 })
 export class DbConnectionComponent implements OnInit {
 
-  constructor() { }
+  constructor(
+    public compare: CompareService
+  ) { }
 
   ngOnInit() {
   }
+
+  doNext() {
+    this.compare.connection$.next(true);
+  }
+
+
 
 }

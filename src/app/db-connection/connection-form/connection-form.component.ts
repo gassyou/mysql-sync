@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { CompareService } from 'src/app/service/compare.service';
 
 @Component({
   selector: 'app-connection-form',
@@ -11,7 +12,13 @@ export class ConnectionFormComponent implements OnInit {
   connectionForm: FormGroup;
   status = 'error';
 
-  constructor(private fb: FormBuilder) { }
+  @Input()
+  db: string;
+
+  constructor(
+    private fb: FormBuilder,
+    public compare: CompareService
+    ) { }
 
   ngOnInit() {
 
@@ -19,11 +26,19 @@ export class ConnectionFormComponent implements OnInit {
       dbType: ['mysql', [Validators.required]],
       host: [null, [Validators.required]],
       port: [null, [Validators.required]],
-      db: [null, [Validators.required]],
+      database: [null, [Validators.required]],
       user: [null, [Validators.required]],
       password: [null, [Validators.required]],
     });
 
+
+    this.compare.connection$.asObservable().subscribe(
+      x => {
+        if (x) {
+          this.connecting();
+        }
+      }
+    );
   }
 
 
@@ -33,6 +48,10 @@ export class ConnectionFormComponent implements OnInit {
     for (const i in this.connectionForm.controls) {
       this.connectionForm.controls[i].markAsDirty();
       this.connectionForm.controls[i].updateValueAndValidity();
+    }
+
+    if (this.connectionForm.valid) {
+
     }
 
   }

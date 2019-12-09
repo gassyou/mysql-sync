@@ -5,20 +5,20 @@
     <div nz-col nzSpan="12">
       <h2 style="color:grey;font-weight:bold;text-align: center;">数据库1</h2>
       <nz-card style="width:100%;">
-          <app-connection-form></app-connection-form>
+          <app-connection-form [db]="'left'" ></app-connection-form>
       </nz-card>
     </div>
     <div nz-col nzSpan="12">
       <h2 style="color:grey;font-weight:bold;text-align: center;">数据库2</h2>
       <nz-card style="width:100%;">
-          <app-connection-form></app-connection-form>
+          <app-connection-form [db]="'right'" ></app-connection-form>
       </nz-card>
     </div>
   </div>
 </div>
 
 <div style="text-align:center;" style="padding:16px">
-    <button nz-button nzType="primary" nzSize="large" nzBlock>下一步</button>
+    <button nz-button nzType="primary" nzSize="large" nzBlock (click)="doNext()">下一步</button>
 </div>
 
 
