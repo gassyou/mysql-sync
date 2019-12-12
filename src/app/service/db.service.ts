@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Connection, ConnectionConfig, FieldInfo, MysqlError } from 'mysql';
 import { Observable } from 'rxjs';
+
 const mysql = require('mysql');
 
 @Injectable({
@@ -49,15 +49,43 @@ export class DbService {
 
 
 
-  constructor() { }
+  constructor(
+  ) {
 
-  createConnection(config: ConnectionConfig): Connection {
-    return mysql.createConnection(config);
   }
 
-  query(connection: Connection, queryString: string, values?: string[]): Observable<{results?: object[], fields?: FieldInfo[]}> {
+  createConnection(config: DbConfig): Observable<mysql.Connection> {
+
+    const db = mysql.createConnection(config);
+
+    return new Observable(
+      observer => {
+        db.connect(
+          err => {
+            if (err) {
+              console.log('Connection error!');
+              db.end();
+              observer.error(err);
+            } else {
+              console.log('Connected!');
+              observer.next(db);
+            }
+            observer.complete();
+          }
+        );
+      }
+    );
+
+  }
+
+  query(
+    connection: mysql.Connection,
+    queryString: string,
+    values?: string[]
+    ): Observable<{results?: object[], fields?: mysql.FieldInfo[]}> {
+
     return new Observable(observer => {
-      connection.query(queryString, values, (err: MysqlError, results?: object[], fields?: FieldInfo[]) => {
+      connection.query(queryString, values, (err: mysql.MysqlError, results?: object[], fields?: mysql.FieldInfo[]) => {
         if (err) {
           observer.error(err);
         } else {
@@ -73,4 +101,12 @@ export class DbService {
 
 
 
+}
+
+export interface DbConfig {
+  host: string;
+  port: number;
+  user: string;
+  password: string;
+  database: string;
 }

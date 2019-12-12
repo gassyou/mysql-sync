@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
-import { Connection, ConnectionConfig } from 'mysql';
-import { DbService } from './db.service';
+import { DbService, DbConfig } from './db.service';
+
+import * as mysql from 'mysql';
 
 @Injectable({
   providedIn: 'root'
@@ -9,11 +10,11 @@ import { DbService } from './db.service';
 export class CompareService {
 
   public connection$: Subject<boolean> = new Subject();
-  public leftDbConnectionOk$: Subject<Connection> = new Subject();
-  public rightDbConnectionOk$: Subject<Connection> = new Subject();
+  public leftDbConnectionOk$: Subject<mysql.Connection> = new Subject();
+  public rightDbConnectionOk$: Subject<mysql.Connection> = new Subject();
 
-  private leftConnect: Connection = null;
-  private rightConnect: Connection = null;
+  private leftConnect: mysql.Connection = null;
+  private rightConnect: mysql.Connection = null;
 
 
   constructor(
@@ -21,12 +22,25 @@ export class CompareService {
   ) { }
 
 
-  doConnect(db, dbConfig: ConnectionConfig) {
+  doConnect(db, dbConfig: DbConfig) {
 
     if (db === 'left') {
-      this.leftConnect = this.db.createConnection(dbConfig);
+      console.log(dbConfig);
+
+      this.db.createConnection(dbConfig).subscribe(
+        conn => {
+          this.leftConnect = conn;
+          console.log(this.leftConnect);
+        }
+      );
+
     } else {
-      this.rightConnect = this.db.createConnection(dbConfig);
+      this.db.createConnection(dbConfig).subscribe(
+        conn => {
+          this.rightConnect = conn;
+          console.log(this.rightConnect);
+        }
+      );
     }
 
   }

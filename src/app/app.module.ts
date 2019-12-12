@@ -13,6 +13,8 @@ import { DbConnectionComponent } from './db-connection/db-connection.component';
 import { CompareComponent } from './compare/compare.component';
 import { ConnectionFormComponent } from './db-connection/connection-form/connection-form.component';
 
+
+
 registerLocaleData(zh);
 
 @NgModule({
@@ -29,7 +31,7 @@ registerLocaleData(zh);
     FormsModule,
     HttpClientModule,
     BrowserAnimationsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
   ],
   providers: [{ provide: NZ_I18N, useValue: zh_CN }],
   bootstrap: [AppComponent]
