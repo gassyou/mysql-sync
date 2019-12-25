@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { CompareService } from 'src/app/service/compare.service';
+import { CompareService } from '../../service/compare.service';
 
 @Component({
   selector: 'app-connection-form',
@@ -51,7 +51,14 @@ export class ConnectionFormComponent implements OnInit {
     }
 
     if (this.connectionForm.valid) {
-
+      console.log(this.connectionForm.value);
+      this.compare.doConnect(this.db, {
+        host: this.connectionForm.controls.host.value,
+        port: this.connectionForm.controls.port.value,
+        database: this.connectionForm.controls.database.value,
+        user: this.connectionForm.controls.user.value,
+        password: this.connectionForm.controls.password.value
+      });
     }
 
   }

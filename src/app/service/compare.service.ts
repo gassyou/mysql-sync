@@ -24,11 +24,23 @@ export class CompareService {
   doConnect(db, dbConfig: ConnectionConfig) {
 
     if (db === 'left') {
-      this.leftConnect = this.db.createConnection(dbConfig);
-    } else {
-      this.rightConnect = this.db.createConnection(dbConfig);
-    }
+      console.log(dbConfig);
 
+      this.db.createConnection(dbConfig).subscribe(
+        conn => {
+          this.leftConnect = conn;
+          console.log(this.leftConnect);
+        }
+      );
+
+    } else {
+      this.db.createConnection(dbConfig).subscribe(
+        conn => {
+          this.rightConnect = conn;
+          console.log(this.rightConnect);
+        }
+      );
+    }
   }
 
 }

@@ -1,11 +1,24 @@
 import { Component, OnInit } from '@angular/core';
-import { TableKeyType } from './mySql/table-key-type';
+import { ElectronService } from './service/electron.service';
 
 @Component({
   selector: 'app-root',
   template: `<router-outlet></router-outlet>`,
 })
 export class AppComponent implements OnInit {
+
+  constructor(
+    public electronService: ElectronService,
+  ) {
+    if (electronService.isElectron) {
+      console.log(process.env);
+      console.log('Mode electron');
+      console.log('Electron ipcRenderer', electronService.ipcRenderer);
+      console.log('NodeJS childProcess', electronService.childProcess);
+    } else {
+      console.log('Mode web');
+    }
+  }
 
   title = 'mysql-sync';
 
