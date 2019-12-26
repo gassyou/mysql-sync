@@ -21,7 +21,6 @@ function createWindow(): BrowserWindow {
       nodeIntegration: true,
       allowRunningInsecureContent: (serve) ? true : false,
     },
-    icon: __dirname + '/dist/favicon.ico'
   });
 
   if (serve) {

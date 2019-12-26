@@ -27,6 +27,7 @@
             "tsConfig": "src/tsconfig.app.json",
             "assets": [
               "src/favicon.ico",
+              "src/favicon.png",
               "src/assets",
               {
                 "glob": "**/*",
@@ -82,7 +83,7 @@
                   "with": "src/environments/environment.prod.ts"
                 }
               ],
-              "optimization": true,
+              "optimization": false,
               "outputHashing": "all",
               "sourceMap": false,
               "extractCss": true,
@@ -90,14 +91,7 @@
               "aot": true,
               "extractLicenses": true,
               "vendorChunk": false,
-              "buildOptimizer": true,
-              "budgets": [
-                {
-                  "type": "initial",
-                  "maximumWarning": "2mb",
-                  "maximumError": "5mb"
-                }
-              ]
+              "buildOptimizer": false
             }
           }
         },
@@ -170,5 +164,14 @@
       }
     }
   },
-  "defaultProject": "mysql-sync"
+  "defaultProject": "mysql-sync",
+  "schematics": {
+    "@schematics/angular:component": {
+      "prefix": "app",
+      "styleext": "less"
+    },
+    "@schematics/angular:directive": {
+      "prefix": "app"
+    }
+  }
 }

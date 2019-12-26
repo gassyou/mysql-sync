@@ -19,7 +19,6 @@ function createWindow() {
             nodeIntegration: true,
             allowRunningInsecureContent: (serve) ? true : false,
         },
-        icon: __dirname + '/dist/favicon.ico'
     });
     if (serve) {
         require('electron-reload')(__dirname, {
