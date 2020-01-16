@@ -15,10 +15,13 @@ export class DbConnectionComponent implements OnInit {
   ngOnInit() {
   }
 
-  doNext() {
+  doConnection() {
     this.compare.connection$.next(true);
   }
 
+  doNext() {
+
+  }
 
 
 }

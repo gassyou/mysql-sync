@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
+import { Subject, Observable, of } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
 import { Connection, ConnectionConfig } from 'mysql';
 import { DbService } from './db.service';
 
@@ -15,32 +16,26 @@ export class CompareService {
   private leftConnect: Connection = null;
   private rightConnect: Connection = null;
 
-
   constructor(
     public db: DbService
   ) { }
 
-
-  doConnect(db, dbConfig: ConnectionConfig) {
-
-    if (db === 'left') {
-      console.log(dbConfig);
-
-      this.db.createConnection(dbConfig).subscribe(
-        conn => {
+  doConnect(db, dbConfig: ConnectionConfig):Observable<boolean> {
+    console.log(dbConfig);
+    return this.db.createConnection(dbConfig).pipe(
+      map(conn=>{
+        if(db === 'left') {
           this.leftConnect = conn;
-          console.log(this.leftConnect);
-        }
-      );
-
-    } else {
-      this.db.createConnection(dbConfig).subscribe(
-        conn => {
+        } else {
           this.rightConnect = conn;
-          console.log(this.rightConnect);
         }
-      );
-    }
+        return true;
+    }),
+    catchError(err => {
+      console.log(err);
+      return of(false);
+    })
+    );
   }
 
 }

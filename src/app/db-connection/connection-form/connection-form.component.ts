@@ -10,7 +10,7 @@ import { CompareService } from '../../service/compare.service';
 export class ConnectionFormComponent implements OnInit {
 
   connectionForm: FormGroup;
-  status = 'error';
+  status = '';
 
   @Input()
   db: string;
@@ -21,7 +21,6 @@ export class ConnectionFormComponent implements OnInit {
     ) { }
 
   ngOnInit() {
-
     this.connectionForm = this.fb.group({
       dbType: ['mysql', [Validators.required]],
       host: [null, [Validators.required]],
@@ -30,7 +29,6 @@ export class ConnectionFormComponent implements OnInit {
       user: [null, [Validators.required]],
       password: [null, [Validators.required]],
     });
-
 
     this.compare.connection$.asObservable().subscribe(
       x => {
@@ -41,7 +39,6 @@ export class ConnectionFormComponent implements OnInit {
     );
   }
 
-
   connecting(): void {
 
     // tslint:disable-next-line: forin
@@ -51,17 +48,20 @@ export class ConnectionFormComponent implements OnInit {
     }
 
     if (this.connectionForm.valid) {
-      console.log(this.connectionForm.value);
+      this.status = 'connecting';
       this.compare.doConnect(this.db, {
         host: this.connectionForm.controls.host.value,
         port: this.connectionForm.controls.port.value,
         database: this.connectionForm.controls.database.value,
         user: this.connectionForm.controls.user.value,
         password: this.connectionForm.controls.password.value
-      });
+      }).subscribe(
+        result => {
+          if(!result) {
+            this.status = 'error';
+          }
+        }
+      );
     }
-
   }
-
-
 }

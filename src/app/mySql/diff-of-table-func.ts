@@ -5,7 +5,6 @@ export class DiffOfTableFunc implements IDifference {
   left: TableFunction;
   right: TableFunction;
 
-
   syncToLeftSql(): string {
     let returnValue = '';
     if (this.left !== null) {
@@ -31,6 +30,4 @@ export class DiffOfTableFunc implements IDifference {
 
     return returnValue.toUpperCase();
   }
-
-
 }

@@ -53,17 +53,14 @@ export class DbService {
 
   createConnection(config: ConnectionConfig): Observable<Connection> {
     const db = mysql.createConnection(config);
-
     return new Observable(
       observer => {
         db.connect(
           err => {
             if (err) {
-              console.log('Connection error!');
               db.end();
               observer.error(err);
             } else {
-              console.log('Connected!');
               observer.next(db);
             }
             observer.complete();
@@ -85,10 +82,4 @@ export class DbService {
       });
     });
   }
-
-
-
-
-
-
 }
