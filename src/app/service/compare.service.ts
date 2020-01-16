@@ -20,15 +20,25 @@ export class CompareService {
     public db: DbService
   ) { }
 
-  doConnect(db, dbConfig: ConnectionConfig):Observable<boolean> {
-    console.log(dbConfig);
+  doLeftDBConnect(dbConfig: ConnectionConfig):Observable<boolean> {
+
     return this.db.createConnection(dbConfig).pipe(
       map(conn=>{
-        if(db === 'left') {
-          this.leftConnect = conn;
-        } else {
-          this.rightConnect = conn;
-        }
+        this.leftConnect = conn;
+        return true;
+    }),
+    catchError(err => {
+      console.log(err);
+      return of(false);
+    })
+    );
+  }
+
+  doRightDBConnect(dbConfig: ConnectionConfig):Observable<boolean> {
+
+    return this.db.createConnection(dbConfig).pipe(
+      map(conn=>{
+        this.rightConnect = conn;
         return true;
     }),
     catchError(err => {

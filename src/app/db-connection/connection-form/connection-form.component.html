@@ -46,6 +46,7 @@
         </nz-form-control>
       </nz-form-item>
 
-      <div style="text-align:center;color:green" *ngIf="status==='connecting'" >状态：数据库连接中</div>
+      <div style="text-align:center;" *ngIf="status==='connecting'" >状态：数据库连接中</div>
+      <div style="text-align:center;color:green" *ngIf="status==='success'" >状态：数据库连接成功</div>
       <div style="text-align:center;color:red" *ngIf="status==='error'" >状态：数据库连接失败</div>
     </form>
