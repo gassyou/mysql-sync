@@ -10,8 +10,6 @@ import { DbService } from './db.service';
 export class CompareService {
 
   public connection$: Subject<boolean> = new Subject();
-  public leftDbConnectionOk$: Subject<Connection> = new Subject();
-  public rightDbConnectionOk$: Subject<Connection> = new Subject();
 
   private leftConnect: Connection = null;
   private rightConnect: Connection = null;
@@ -20,32 +18,34 @@ export class CompareService {
     public db: DbService
   ) { }
 
-  doLeftDBConnect(dbConfig: ConnectionConfig):Observable<boolean> {
+  doConnect(db:string, dbConfig: ConnectionConfig):Observable<any> {
 
     return this.db.createConnection(dbConfig).pipe(
       map(conn=>{
-        this.leftConnect = conn;
-        return true;
+
+        if(db === 'left') {
+          this.leftConnect = conn;
+        } else {
+          this.rightConnect = conn;
+        }
+
+        return {db:db,result:true};
     }),
     catchError(err => {
       console.log(err);
-      return of(false);
+      return of({db:db,result:false});
     })
     );
   }
 
-  doRightDBConnect(dbConfig: ConnectionConfig):Observable<boolean> {
+  doComparetion():boolean {
+    if(this.leftConnect === null || this.rightConnect === null) {
+      return false;
+    }
 
-    return this.db.createConnection(dbConfig).pipe(
-      map(conn=>{
-        this.rightConnect = conn;
-        return true;
-    }),
-    catchError(err => {
-      console.log(err);
-      return of(false);
-    })
-    );
+
+    return true;
   }
+
 
 }

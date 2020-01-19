@@ -9,6 +9,7 @@ const routes: Routes = [
 
   {path: '', component: CompareComponent, canActivate: [CanCompareGuard]},
   {path: 'connection', component: DbConnectionComponent},
+  {path: 'compare', component: CompareComponent}
 ];
 
 @NgModule({

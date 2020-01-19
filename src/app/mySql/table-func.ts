@@ -1,6 +1,5 @@
 import { IComparable } from './comparable-interface';
 import { DomainEvent } from '../common/domain-event';
-import { IDifference } from './difference-interface';
 
 
 export class TableFunction implements IComparable {

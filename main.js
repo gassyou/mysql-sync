@@ -20,6 +20,7 @@ function createWindow() {
             allowRunningInsecureContent: (serve) ? true : false,
         },
     });
+    electron_1.Menu.setApplicationMenu(null);
     if (serve) {
         require('electron-reload')(__dirname, {
             electron: require(__dirname + "/node_modules/electron")

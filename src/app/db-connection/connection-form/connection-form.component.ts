@@ -1,11 +1,11 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ChangeDetectorRef } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { CompareService } from '../../service/compare.service';
 
 @Component({
   selector: 'app-connection-form',
   templateUrl: './connection-form.component.html',
-  styleUrls: ['./connection-form.component.less']
+  styleUrls: ['./connection-form.component.less'],
 })
 export class ConnectionFormComponent implements OnInit {
 
@@ -17,7 +17,8 @@ export class ConnectionFormComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    public compare: CompareService
+    public compare: CompareService,
+    public cd: ChangeDetectorRef
     ) { }
 
   ngOnInit() {
@@ -29,6 +30,10 @@ export class ConnectionFormComponent implements OnInit {
       user: [null, [Validators.required]],
       password: [null, [Validators.required]],
     });
+
+    if(localStorage.getItem(this.db)) {
+      this.connectionForm.setValue(JSON.parse(localStorage.getItem(this.db)));
+    }
 
     this.compare.connection$.asObservable().subscribe(
       x => {
@@ -50,40 +55,27 @@ export class ConnectionFormComponent implements OnInit {
     if (this.connectionForm.valid) {
       this.status = 'connecting';
 
-      if (this.db === 'left') {
-        this.compare.doLeftDBConnect({
-          host: this.connectionForm.controls.host.value,
-          port: this.connectionForm.controls.port.value,
-          database: this.connectionForm.controls.database.value,
-          user: this.connectionForm.controls.user.value,
-          password: this.connectionForm.controls.password.value
-        }).subscribe(
-          result => {
-            if(!result) {
-              this.status = 'error';
-            } else {
-              this.status = 'success';
-            }
-          }
-        );
-      } else {
-        this.compare.doRightDBConnect({
-          host: this.connectionForm.controls.host.value,
-          port: this.connectionForm.controls.port.value,
-          database: this.connectionForm.controls.database.value,
-          user: this.connectionForm.controls.user.value,
-          password: this.connectionForm.controls.password.value
-        }).subscribe(
-          result => {
-            if(!result) {
-              this.status = 'error';
-            } else {
-              this.status = 'success';
-            }
-          }
-        );
-      }
+      localStorage.setItem(this.db,JSON.stringify(this.connectionForm.value));
 
+      this.compare.doConnect(this.db,{
+        host: this.connectionForm.controls.host.value,
+        port: this.connectionForm.controls.port.value,
+        database: this.connectionForm.controls.database.value,
+        user: this.connectionForm.controls.user.value,
+        password: this.connectionForm.controls.password.value
+      }).subscribe(
+        result => {
+          if(result.db === this.db) {
+            if(!result.result) {
+              this.status = 'error';
+            } else {
+              this.status = 'success';
+              console.log(result);
+            }
+            this.cd.detectChanges();
+          }
+        }
+      );
     }
   }
 }

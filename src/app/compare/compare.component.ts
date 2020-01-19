@@ -7,7 +7,14 @@ import { Component, OnInit } from '@angular/core';
 })
 export class CompareComponent implements OnInit {
 
+  host1 = '';
+  name1 = '';
+
+  host2 = '';
+  name2 = '';
+
   constructor() { }
+
 
   ngOnInit() {
   }
