@@ -15,10 +15,15 @@
         <div>{{host2}}({{name2}})</div>
       </div>
     </div>
-    <div class="center_content"></div>
+    <div class="center_content">
+      <app-diff-item></app-diff-item>
+    </div>
   </div>
   <div nz-col nzSpan="4" class="side">
     <div class="header side_header">更新到数据库2</div>
-    <div class="side_content"></div>
+    <div class="side_content">
+      <nz-spin [nzSpinning]="isSpinning">
+      </nz-spin>
+    </div>
   </div>
 </div>

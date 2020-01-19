@@ -13,6 +13,8 @@ export class CompareComponent implements OnInit {
   host2 = '';
   name2 = '';
 
+  isSpinning = false;
+
   constructor() { }
 
 

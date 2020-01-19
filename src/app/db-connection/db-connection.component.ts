@@ -28,8 +28,9 @@ export class DbConnectionComponent implements OnInit {
       this.message.create('error','请先连接数据库！');
     } else {
       // 跳转比较结果页面
-      this.router.navigate(['compare']);
+      // this.router.navigate(['compare']);
     }
+    this.router.navigate(['compare']);
   }
 
 

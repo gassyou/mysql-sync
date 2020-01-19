@@ -12,6 +12,7 @@ import zh from '@angular/common/locales/zh';
 import { DbConnectionComponent } from './db-connection/db-connection.component';
 import { CompareComponent } from './compare/compare.component';
 import { ConnectionFormComponent } from './db-connection/connection-form/connection-form.component';
+import { DiffItemComponent } from './compare/diff-item/diff-item.component';
 
 registerLocaleData(zh);
 
@@ -20,7 +21,8 @@ registerLocaleData(zh);
     AppComponent,
     DbConnectionComponent,
     CompareComponent,
-    ConnectionFormComponent
+    ConnectionFormComponent,
+    DiffItemComponent
   ],
   imports: [
     BrowserModule,
