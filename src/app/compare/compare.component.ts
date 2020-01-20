@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { CompareService } from '../service/compare.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-compare',
@@ -15,10 +17,19 @@ export class CompareComponent implements OnInit {
 
   isSpinning = false;
 
-  constructor() { }
+  constructor(
+    public compare: CompareService,
+    private router: Router
+  ) { }
 
 
   ngOnInit() {
+  }
+
+
+  exit() {
+    this.compare.exit();
+    this.router.navigate(['connection']);
   }
 
 }

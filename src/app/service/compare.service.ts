@@ -47,5 +47,19 @@ export class CompareService {
     return true;
   }
 
+  exit() {
+    if(this.leftConnect) {
+      this.leftConnect.end();
+    }
+
+    if(this.rightConnect) {
+      this.rightConnect.end();
+    }
+
+    this.leftConnect = null;
+    this.rightConnect = null;
+
+  }
+
 
 }

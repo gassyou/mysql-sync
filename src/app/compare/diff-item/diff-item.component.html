@@ -1,6 +1,6 @@
 
   <div *ngFor="let header of diffItems">
-    <div id="header" nz-row class="header">
+    <div nz-row class="header" [ngClass]="isActive" (mouseover)="isActive='mouseover'" (mouseout)="isActive='mouseout'">
       <div nz-col nzSpan="12" class="header_left">
         <i nz-icon nzType="right" nzTheme="outline" *ngIf="!showDetail" (click)="showDetail=!showDetail"></i>
         <i nz-icon nzType="down" nzTheme="outline" *ngIf="showDetail" (click)="showDetail=!showDetail"></i>
@@ -9,8 +9,8 @@
       <div nz-col nzSpan="12" class="header_right">{{header.name2}}</div>
     </div>
 
-    <div id="detail" *ngIf="showDetail">
-      <div *ngFor="let detail of detailItems" nz-row class="detail">
+    <div *ngIf="showDetail">
+      <div *ngFor="let detail of detailItems" nz-row class="detail" [ngClass]="isActive" (mouseover)="isActive='mouseover'" (mouseout)="isActive='mouseout'">
         <div nz-col nzSpan="12" class="detail_left">{{detail.name1}}</div>
         <div nz-col nzSpan="12" class="detail_right">{{detail.name2}}</div>
       </div>

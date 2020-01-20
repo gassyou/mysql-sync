@@ -1,4 +1,6 @@
-<h1>数据库比较结果</h1>
+<h1>数据库比较结果
+  <a (click)="exit()">[退出]</a>
+</h1>
 <div nz-row>
   <div nz-col nzSpan="4" class="side">
     <div class="header side_header">更新到数据库1</div>
@@ -6,7 +8,7 @@
   </div>
   <div nz-col nzSpan="16">
     <div nz-row class="header">
-      <div nz-col nzSpan="12" >
+      <div nz-col nzSpan="12" class="header_left">
         <div>数据库1</div>
         <div>{{host1}}({{name1}})</div>
       </div>
