@@ -70,9 +70,11 @@ export class ConnectionFormComponent implements OnInit {
               this.status = 'error';
             } else {
               this.status = 'success';
-              console.log(result);
             }
-            this.cd.detectChanges();
+
+            if (!this.cd['destroyed']) {
+              this.cd.detectChanges();
+            }
           }
         }
       );

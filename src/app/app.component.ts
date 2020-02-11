@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { ElectronService } from './service/electron.service';
+import { CompareService } from './service/compare.service';
 
 @Component({
   selector: 'app-root',
@@ -9,6 +10,7 @@ export class AppComponent implements OnInit {
 
   constructor(
     public electronService: ElectronService,
+    public compare: CompareService,
   ) {
     if (electronService.isElectron) {
       console.log(process.env);
@@ -23,5 +25,10 @@ export class AppComponent implements OnInit {
   title = 'mysql-sync';
 
   ngOnInit(): void {
+  }
+
+  @HostListener('window:beforeunload', ['$event'])
+  exit() {
+    this.compare.exit();
   }
 }

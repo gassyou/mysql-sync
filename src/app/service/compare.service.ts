@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Subject, Observable, of } from 'rxjs';
+import { Subject, Observable, of, zip } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { Connection, ConnectionConfig } from 'mysql';
 import { DbService } from './db.service';
@@ -14,6 +14,9 @@ export class CompareService {
   private leftConnect: Connection = null;
   private rightConnect: Connection = null;
 
+  private leftConnCofing: ConnectionConfig = null;
+  private rightConnCofing: ConnectionConfig = null;
+
   constructor(
     public db: DbService
   ) { }
@@ -25,8 +28,10 @@ export class CompareService {
 
         if(db === 'left') {
           this.leftConnect = conn;
+          this.leftConnCofing = dbConfig;
         } else {
           this.rightConnect = conn;
+          this.rightConnCofing = dbConfig;
         }
 
         return {db:db,result:true};
@@ -43,7 +48,30 @@ export class CompareService {
       return false;
     }
 
+    const leftTable = [];
+    const rightTable = [];
 
+    zip(
+      this.db.query(this.leftConnect,this.db.ALL_TABLES_SQL),
+      this.db.query(this.rightConnect,this.db.ALL_TABLES_SQL)
+    ).subscribe(
+      res => {
+        res[0].results.map(
+          table => {
+            leftTable.push(table['Tables_in_' + this.leftConnCofing.database]);
+          }
+        );
+
+        res[1].results.map(
+          table => {
+            rightTable.push(table['Tables_in_' + this.rightConnCofing.database]);
+          }
+        );
+
+
+
+      }
+    );
     return true;
   }
 
@@ -58,7 +86,8 @@ export class CompareService {
 
     this.leftConnect = null;
     this.rightConnect = null;
-
+    this.leftConnCofing = null;
+    this.rightConnCofing = null;
   }
 
 
