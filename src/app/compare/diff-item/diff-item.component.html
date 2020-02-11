@@ -1,19 +1,35 @@
 
-  <div *ngFor="let header of diffItems">
-    <div nz-row class="header" [ngClass]="isActive" (mouseover)="isActive='mouseover'" (mouseout)="isActive='mouseout'">
-      <div nz-col nzSpan="12" class="header_left">
-        <i nz-icon nzType="right" nzTheme="outline" *ngIf="!showDetail" (click)="showDetail=!showDetail"></i>
-        <i nz-icon nzType="down" nzTheme="outline" *ngIf="showDetail" (click)="showDetail=!showDetail"></i>
-        <span style="margin-left:8px">{{header.name1}}</span>
-      </div>
-      <div nz-col nzSpan="12" class="header_right">{{header.name2}}</div>
+  <div *ngFor="let header of diffItems" >
+    <div nz-row class="header"
+      [ngClass]="[selectedId===header.id?'active':'',header.styleClass]"
+      (mouseover)="header.styleClass='mouseover'"
+      (mouseout)="header.styleClass='mouseout'"
+      (click)="onItemClick(header.id)">
+        <div nz-col nzSpan="12" class="header_left">
+          <i nz-icon nzType="right" nzTheme="outline" *ngIf="!header.isSelected" (click)="header.isSelected=!header.isSelected"></i>
+          <i nz-icon nzType="down" nzTheme="outline" *ngIf="header.isSelected" (click)="header.isSelected=!header.isSelected"></i>
+          <span style="margin-left:8px">{{header.title_1}}</span>
+        </div>
+      <div nz-col nzSpan="12" class="header_right">{{header.title_2}}</div>
     </div>
 
-    <div *ngIf="showDetail">
-      <div *ngFor="let detail of detailItems" nz-row class="detail" [ngClass]="isActive" (mouseover)="isActive='mouseover'" (mouseout)="isActive='mouseout'">
-        <div nz-col nzSpan="12" class="detail_left">{{detail.name1}}</div>
-        <div nz-col nzSpan="12" class="detail_right">{{detail.name2}}</div>
+    <div *ngIf="header.isSelected && header.items && header.items?.length>0">
+      <div *ngFor="let detail of header.items" nz-row class="detail"
+        [ngClass]="[selectedId===detail.id?'active':'',detail.styleClass]"
+        (mouseover)="detail.styleClass='mouseover'"
+        (mouseout)="detail.styleClass='mouseout'"
+        (click)="onItemClick(detail.id)">
+          <div nz-col nzSpan="12" class="detail_left">{{detail.title_1}}</div>
+          <div nz-col nzSpan="12" class="detail_right">{{detail.title_2}}</div>
       </div>
+    </div>
+
+    <div *ngIf="header.isSelected && (!header.items || header.items?.length === 0)"
+      [ngClass]="header.styleClass"
+      (mouseover)="header.styleClass='mouseover'"
+      (mouseout)="header.styleClass='mouseout'">
+
+        <div class="detail" class="detail detail_left" >没有数据</div>
     </div>
   </div>
 

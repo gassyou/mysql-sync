@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { DiffItemViewModel } from './diff-item-view-model';
 
 @Component({
   selector: 'app-diff-item',
@@ -7,16 +8,88 @@ import { Component, OnInit } from '@angular/core';
 })
 export class DiffItemComponent implements OnInit {
 
-  showDetail=false;
+  selectedId='';
 
-  isActive = 'mouseout';
+  diffItems: DiffItemViewModel[] = [
+    {
+      id: '1',
+      title_1: 'mst_sys_user',
+      title_2: 'mst_sys_user',
+      styleClass: 'mouseout',
+      isSelected: false,
+      items:[
+        {
+          id: '1-1',
+          title_1: 'id',
+          title_2: 'id',
+          styleClass: 'mouseout',
+          isSelected: false,
+        },
+        {
+          id: '1-2',
+          title_1: 'name',
+          title_2: 'name',
+          styleClass: 'mouseout',
+          isSelected: false,
+        },
+        {
+          id: '1-3',
+          title_1: 'enterDay',
+          title_2: 'enterDay',
+          styleClass: 'mouseout',
+          isSelected: false,
+        }
+      ]
+    },
+    {
+      id: '2',
+      title_1: 'mst_sys_config',
+      title_2: 'mst_sys_config',
+      styleClass: 'mouseout',
+      isSelected: false,
+      items:[
+        {
+          id: '2-1',
+          title_1: 'id',
+          title_2: 'id',
+          styleClass: 'mouseout',
+          isSelected: false,
+        },
+        {
+          id: '2-2',
+          title_1: 'name',
+          title_2: 'name',
+          styleClass: 'mouseout',
+          isSelected: false,
+        },
+        {
+          id: '2-3',
+          title_1: 'enterDay',
+          title_2: 'enterDay',
+          styleClass: 'mouseout',
+          isSelected: false,
+        }
+      ]
+    },
+    {
+      id: '3',
+      title_1: 'mst_sys_setting',
+      title_2: 'mst_sys_setting',
+      styleClass: 'mouseout',
+      isSelected: false,
+    }
 
-  diffItems = [{name1:'sys_user',name2:'sys_user'}, {name1:'sys_function',name2:'sys_function'}, {name1:'mst_user_role',name2:'mst_user_role'}];
-  detailItems = [{name1:'id',name2:'id'}, {name1:'name',name2:'name'}, {name1:'gmt_create',name2:'gmt_create'}];
+  ];
 
   constructor() { }
 
   ngOnInit() {
   }
+
+  onItemClick(id) {
+    this.selectedId = id;
+  }
+
+
 
 }

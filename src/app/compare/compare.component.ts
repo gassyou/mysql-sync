@@ -24,6 +24,11 @@ export class CompareComponent implements OnInit {
 
 
   ngOnInit() {
+    this.host1 = this.compare.leftConnCofing.host;
+    this.name1 = this.compare.leftConnCofing.database;
+
+    this.host2 = this.compare.rightConnCofing.host;
+    this.name2 = this.compare.rightConnCofing.database;
   }
 
 

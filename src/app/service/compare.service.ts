@@ -14,8 +14,8 @@ export class CompareService {
   private leftConnect: Connection = null;
   private rightConnect: Connection = null;
 
-  private leftConnCofing: ConnectionConfig = null;
-  private rightConnCofing: ConnectionConfig = null;
+  public leftConnCofing: ConnectionConfig = null;
+  public rightConnCofing: ConnectionConfig = null;
 
   constructor(
     public db: DbService
