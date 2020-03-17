@@ -8,7 +8,7 @@ export class TableColumn implements IComparable {
   public readonly dataType: string;
   public readonly nullable: boolean;
   public readonly autoIncrement: boolean;
-  public readonly defaultValue: string;
+  public readonly defaultValue: any;
   public readonly extra: string;
   public readonly comment: string;
 

@@ -8,7 +8,7 @@ export class TableKey implements IComparable {
   public readonly keyName: string;
   public readonly keyColumns: string[] = [];
   public readonly referenceTable: string;
-  public readonly referenceColumns: string[] = [];
+  public readonly referenceColumns: string;
   public readonly keyType: TableKeyType;
 
   public constructor(val = {}) {
@@ -31,7 +31,7 @@ export class TableKey implements IComparable {
 
     if (this.keyType === TableKeyType.FOREIGN_KEY) {
       return 'CONSTRAINT ' + this.keyName  + ' ' + TableKeyType.FOREIGN_KEY + ' ( ' + this.keyColumns.join(',') + ' )'
-              + 'REFERENCES ' + this.referenceTable + ' ( ' + this.referenceColumns.join(',') + ' )';
+              + 'REFERENCES ' + this.referenceTable + ' ( ' + this.referenceColumns + ' )';
     }
 
     return '';

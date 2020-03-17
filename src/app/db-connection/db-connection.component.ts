@@ -20,6 +20,7 @@ export class DbConnectionComponent implements OnInit {
 
   doConnection() {
     this.compare.connection$.next(true);
+
   }
 
   doNext() {
