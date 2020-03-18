@@ -8,6 +8,7 @@ import { String } from 'typescript-string-operations';
 import { TableColumn } from '../mySql/table-column';
 import { TableKey } from '../mySql/table-key';
 import { TableKeyType } from '../mySql/table-key-type';
+import { TableFunction } from '../mySql/table-func';
 
 @Injectable({
   providedIn: 'root'
@@ -66,53 +67,38 @@ export class CompareService {
       x=>console.log(x)
     );
 
+    this.uniqueKeyFactory(this.leftConnect, this.leftConnCofing.database,"tbl_approval_record").subscribe(
+      x=>console.log(x)
+    );
+
+    this.indexKeyFactory(this.leftConnect, this.leftConnCofing.database,"tbl_approval_record").subscribe(
+      x=>console.log(x)
+    );
+
+    this.functionFactory(this.leftConnect,this.leftConnCofing.database).subscribe(
+      x=>console.log(x)
+    );
+
+    this.allTableName(this.leftConnect,this.leftConnCofing.database).subscribe(
+      x=>console.log(x)
+    );
+
     const leftTable = [];
     const rightTable = [];
-
-    zip(
-      this.db.query(this.leftConnect,this.db.ALL_TABLES_SQL),
-      this.db.query(this.rightConnect,this.db.ALL_TABLES_SQL)
-    ).subscribe(
-      res => {
-        res[0].results.map(
-          table => {
-            leftTable.push(table['Tables_in_' + this.leftConnCofing.database]);
-          }
-        );
-
-        res[1].results.map(
-          table => {
-            rightTable.push(table['Tables_in_' + this.rightConnCofing.database]);
-          }
-        );
-
-      }
-    );
     return true;
   }
 
-
-  tableFactory(conn: Connection): Observable<Table[]> {
-
+  allTableName(conn: Connection,schema: string): Observable<string[]> {
     return this.db.query(conn,this.db.ALL_TABLES_SQL).pipe(
-      map( data => {
-       const tables: Table[] = [];
-       data.results.map(
-        table => {
-          zip(
-            this.db.query(conn,String.Format(this.db.ALL_COLUMNS_SQL,table)),
-            this.db.query(conn,String.Format(this.db.ALL_KEYS_SQL,table)),
-            this.db.query(conn,String.Format(this.db.TABLE_DDL_SQL,table)),
-          )
-
-         }
-      );
-       return tables;
+      map(data =>{
+        const tables : string[] = [];
+        data.results.map( x=>{
+          tables.push(x['Tables_in_'+schema]);
+        });
+        return tables;
       })
-    );
-
+    )
   }
-
 
   columnFactory(conn: Connection,table: string): Observable<TableColumn[]> {
 
@@ -135,7 +121,6 @@ export class CompareService {
               }));
             }
           );
-
           return columns;
         }
       )
@@ -186,6 +171,70 @@ export class CompareService {
 
   }
 
+  uniqueKeyFactory(conn: Connection, schema: string, table: string): Observable<TableKey[]> {
+    const query = String.Format(this.db.UNIQUE_KEY_SQL,schema,table);
+    return this.db.query(conn, query).pipe(
+      map( data => {
+        const uniqueKeys: TableKey[] = [];
+
+        data.results.map( x=> {
+          uniqueKeys.push(new TableKey({
+            tableName: table,
+            keyName: x['CONSTRAINT_NAME'],
+            keyColumns: x['COLUMNS_NAME'].split(','),
+            referenceTable: '',
+            referenced_column_name: '',
+            keyType: TableKeyType.UNIQUE_KEY
+          }));
+        });
+
+        return uniqueKeys;
+      })
+    );
+  }
+
+  indexKeyFactory(conn: Connection, schema: string, table: string): Observable<TableKey[]> {
+    const query = String.Format(this.db.INDEX_KEY_SQL,schema,table);
+    return this.db.query(conn, query).pipe(
+      map( data => {
+        const indexKeys: TableKey[] = [];
+
+        data.results.map( x=> {
+          indexKeys.push(new TableKey({
+            tableName: table,
+            keyName: x['INDEX_NAME'],
+            keyColumns: x['COLUMNS_NAME'].split(','),
+            referenceTable: '',
+            referenced_column_name: '',
+            keyType: TableKeyType.INDEX_KEY
+          }));
+        });
+
+        return indexKeys;
+      })
+    );
+  }
+
+  functionFactory(conn: Connection,schema: string): Observable<TableFunction[]> {
+    const query = String.Format(this.db.ALL_FUN_SQL,schema);
+
+    return this.db.query(conn,query).pipe(
+      map( data=>{
+        const funcitons: TableFunction[] = [];
+
+        data.results.map( x=> {
+          funcitons.push(new TableFunction({
+            funcName: x['name'],
+            funcType: x['type'],
+            funcBody: x['body'],
+          }));
+        });
+
+        return funcitons;
+      })
+    );
+  }
+
   exit() {
     if(this.leftConnect) {
       this.leftConnect.end();
@@ -200,6 +249,5 @@ export class CompareService {
     this.leftConnCofing = null;
     this.rightConnCofing = null;
   }
-
 
 }
