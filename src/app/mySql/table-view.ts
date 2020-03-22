@@ -2,21 +2,20 @@ import { IComparable } from './comparable-interface';
 import { DomainEvent } from '../common/domain-event';
 
 
-export class TableFunction implements IComparable {
+export class TableView implements IComparable {
 
-  public readonly funcName: string;
-  public readonly funcType: string;
-  public readonly funcBody: string;
+  public readonly viewName: string;
+  public readonly viewBody: string;
 
   public constructor(val = {}) {
     Object.assign(this, val);
   }
 
   toDDLString(): string {
-    return this.funcBody;
+    return this.viewBody;
   }
 
-  findDiff(other: TableFunction): boolean {
+  findDiff(other: TableView): boolean {
 
     if (!other) {
       DomainEvent.getInstance().raise({left: this, right: other});

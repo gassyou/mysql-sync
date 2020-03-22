@@ -8,11 +8,69 @@ const mysql = require('mysql');
 })
 export class DbService {
 
-  public ALL_TABLES_SQL = 'show tables';
+  public ALL_TABLES_SQL = `show full tables where Table_type = 'BASE TABLE'`;
+  public ALL_VIEW_SQL = `SELECT * FROM information_schema.views where TABLE_SCHEMA = '{0}'`;
   public TABLE_DDL_SQL = 'show create table {0}';
-  public ALL_COLUMNS_SQL =  'show full columns from {0}';
+  public ALL_COLUMNS_SQL = 'show full columns from {0}';
   public ALL_KEYS_SQL = 'show keys from {0}';
   public ALL_FUN_SQL = `select name,type,CAST(body AS CHAR) as body from mysql.proc where (type = 'PROCEDURE'  or type = 'FUNCTION') and  db='{0}'`;
+
+  public ALL_KEYS_SQL2 = `select
+                            TABLE_NAME ,
+                            INDEX_NAME ,
+                            GROUP_CONCAT(COLUMN_NAME)as COLUMNS_NAME,
+                            IFNULL(CONSTRAINT_TYPE, "KEY") as CONSTRAINT_TYPE,
+                            REFERENCED_TABLE_NAME,
+                            REFERENCED_COLUMN_NAME
+                          from
+                            (
+                            select
+                              distinct
+                              a.TABLE_NAME ,
+                              a.INDEX_NAME ,
+                              a.COLUMN_NAME,
+                              b.CONSTRAINT_TYPE,
+                              c.REFERENCED_TABLE_NAME,
+                              c.REFERENCED_COLUMN_NAME
+                            from
+                              INFORMATION_SCHEMA.STATISTICS as a
+                            left join (
+                              select
+                                TABLE_SCHEMA ,
+                                TABLE_NAME ,
+                                CONSTRAINT_NAME ,
+                                CONSTRAINT_TYPE
+                              from
+                                information_schema.TABLE_CONSTRAINTS
+                              where
+                                CONSTRAINT_SCHEMA = '{0}'
+                                and table_name = '{1}' ) as b on
+                              a.INDEX_NAME = b.CONSTRAINT_NAME
+                            left join (
+                              select
+                                TABLE_SCHEMA ,
+                                TABLE_NAME ,
+                                CONSTRAINT_NAME ,
+                                REFERENCED_TABLE_NAME ,
+                                REFERENCED_COLUMN_NAME
+                              from
+                                information_schema.key_column_usage
+                              where
+                                CONSTRAINT_SCHEMA = '{0}'
+                                and table_name = '{1}'  ) as c on
+                              a.INDEX_NAME = c.CONSTRAINT_NAME
+                            where
+                              a.TABLE_SCHEMA = '{0}'
+                              and a.table_name = '{1}'
+                            order by
+                              index_name,
+                              COLUMN_NAME ) as d
+                          group by
+                            d.TABLE_NAME ,
+                            d.INDEX_NAME ,
+                            d.CONSTRAINT_TYPE,
+                            d.REFERENCED_TABLE_NAME,
+                            d.REFERENCED_COLUMN_NAME`;
 
   public PRIMARY_KEY_SQL = `select
                               column_name

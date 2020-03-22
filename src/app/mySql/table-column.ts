@@ -28,7 +28,7 @@ export class TableColumn implements IComparable {
 
   public findDiff(other: TableColumn): boolean {
 
-    if (other === null) {
+    if (!other) {
       DomainEvent.getInstance().raise({left: this, right: other});
       return true;
     } else if ( this.toDDLString().toUpperCase() !== other.toDDLString().toUpperCase()) {

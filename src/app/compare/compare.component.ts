@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CompareService } from '../service/compare.service';
 import { Router } from '@angular/router';
+import { DomainEvent, EventAction } from '../common/domain-event';
 
 @Component({
   selector: 'app-compare',
@@ -29,6 +30,15 @@ export class CompareComponent implements OnInit {
 
     this.host2 = this.compare.rightConnCofing.host;
     this.name2 = this.compare.rightConnCofing.database;
+
+
+
+    const showDiff:EventAction = (e: any) => {
+      console.log(e);
+
+    }
+
+    DomainEvent.getInstance().Register(showDiff);
   }
 
 

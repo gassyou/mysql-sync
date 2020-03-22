@@ -17,6 +17,7 @@ export class DomainEvent {
   }
 
   public raise(eventArgs: any) {
+    // console.log(eventArgs);
     this.actionList.forEach(
       action => {
         action(eventArgs);

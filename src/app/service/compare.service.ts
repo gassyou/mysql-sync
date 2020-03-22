@@ -1,14 +1,15 @@
 import { Injectable } from '@angular/core';
-import { Subject, Observable, of, zip } from 'rxjs';
-import { map, catchError } from 'rxjs/operators';
+import { Subject, Observable, from, of, zip} from 'rxjs';
+import { map, catchError, mergeMap, toArray,mergeAll} from 'rxjs/operators';
 import { Connection, ConnectionConfig } from 'mysql';
 import { DbService } from './db.service';
 import { Table } from '../mySql/table';
 import { String } from 'typescript-string-operations';
 import { TableColumn } from '../mySql/table-column';
 import { TableKey } from '../mySql/table-key';
-import { TableKeyType } from '../mySql/table-key-type';
+import { TableKeyType, KeyType } from '../mySql/table-key-type';
 import { TableFunction } from '../mySql/table-func';
+import { DomainEvent } from '../common/domain-event';
 
 @Injectable({
   providedIn: 'root'
@@ -54,50 +55,96 @@ export class CompareService {
       return false;
     }
 
+    console.log(new Date());
+    const leftTables$ = this.allTables(this.leftConnect,this.leftConnCofing.database);
+    const rightTables$ = this.allTables(this.rightConnect,this.rightConnCofing.database);
 
-    this.columnFactory(this.leftConnect,"act_cmmn_casedef").subscribe(
-      x=>console.log(x)
-    );
+    zip(leftTables$,rightTables$).subscribe(
+      ([leftTables,rightTables]) => {
 
-    this.primaryKeyFactory(this.leftConnect, this.leftConnCofing.database,"act_id_membership").subscribe(
-      x=>console.log(x)
-    );
+        leftTables.forEach(
+          left => {
+            const right = rightTables.find(x=> x.tableName === left.tableName);
+            left.findDiff(right);
+          }
+        );
+        console.log(new Date());
+        rightTables.forEach(
+          right => {
+            const left = leftTables.find(x=>x.tableName === right.tableName);
+            right.findDiff(left);
+          }
+        );
+        console.log(rightTables);
+        console.log(new Date());
+    });
 
-    this.foreignKeyFactory(this.leftConnect, this.leftConnCofing.database,"act_ru_execution").subscribe(
-      x=>console.log(x)
-    );
 
-    this.uniqueKeyFactory(this.leftConnect, this.leftConnCofing.database,"tbl_approval_record").subscribe(
-      x=>console.log(x)
-    );
-
-    this.indexKeyFactory(this.leftConnect, this.leftConnCofing.database,"tbl_approval_record").subscribe(
-      x=>console.log(x)
-    );
-
-    this.functionFactory(this.leftConnect,this.leftConnCofing.database).subscribe(
-      x=>console.log(x)
-    );
-
-    this.allTableName(this.leftConnect,this.leftConnCofing.database).subscribe(
-      x=>console.log(x)
-    );
-
-    const leftTable = [];
-    const rightTable = [];
     return true;
   }
 
-  allTableName(conn: Connection,schema: string): Observable<string[]> {
-    return this.db.query(conn,this.db.ALL_TABLES_SQL).pipe(
+  allTables(conn: Connection, schema: string): Observable<Table[]> {
+
+    const allTables$ = this.db.query(conn,this.db.ALL_TABLES_SQL).pipe(
       map(data =>{
-        const tables : string[] = [];
+
+        const tables = [];
         data.results.map( x=>{
-          tables.push(x['Tables_in_'+schema]);
+          tables.push(x['Tables_in_' + schema]);
         });
-        return tables;
+        return from(tables);
       })
-    )
+    );
+
+    return allTables$.pipe(
+      mergeAll(),
+      mergeMap( x =>this.tableFactory(conn,schema,x)),
+      toArray()
+    );
+  }
+
+  tableFactory(conn: Connection, schema: string, tableName: string): Observable<Table> {
+
+    const columnsObservable = this.columnFactory(conn, tableName);
+    const keysObservable = this.allKeyFactory(conn, schema,tableName);
+    const ddlObservable = this.getTableDDL(conn,tableName);
+    return zip(columnsObservable,keysObservable).pipe(
+      map(([columns,keys])=>{
+        return new Table({
+          tableName: tableName,
+          columns: columns,
+          keys: keys,
+          tableDDL: ''
+        })
+      })
+    );
+  }
+
+  getTableDDL(conn:Connection,tableName:string): Observable<String> {
+    const query = String.Format(this.db.TABLE_DDL_SQL,tableName);
+    return this.db.query(conn,query).pipe(map( data => {
+      return data.results[0]['Create Table'];
+    }));
+  }
+
+  allKeyFactory(conn: Connection, schema: string, table: string): Observable<TableKey[]> {
+    const primaryKey = this.primaryKeyFactory(conn, schema,table);
+    const foreignKey = this.foreignKeyFactory(conn, schema,table);
+    const uniqueKey = this.uniqueKeyFactory(conn, schema,table);
+    const indexKey = this.indexKeyFactory(conn, schema,table);
+
+    return  zip(primaryKey,foreignKey,uniqueKey,indexKey).pipe(
+      map(([pkeys, fKeys, uKeys,iKeys]) => {
+        const results: TableKey[] = pkeys.concat(fKeys,uKeys,iKeys);
+        const allKeys: TableKey[] = [];
+        results.map(x=>{
+          if(!allKeys.find(y=>{ return y.keyName === x.keyName})) {
+            allKeys.push(x);
+          }
+        });
+        return allKeys;
+      })
+    );
   }
 
   columnFactory(conn: Connection,table: string): Observable<TableColumn[]> {
@@ -127,7 +174,28 @@ export class CompareService {
     );
   }
 
-  primaryKeyFactory(conn: Connection, schema: string, table: string): Observable<TableKey> {
+  keyFactory(conn:Connection,schema: string,tableName: string): Observable<TableKey[]>{
+    const query = String.Format(this.db.ALL_KEYS_SQL2,schema,tableName);
+    return this.db.query(conn, query).pipe(map(data => {
+      const keys: TableKey[] = [];
+      data.results.map(
+        x => {
+          keys.push(new TableKey({
+            tableName: tableName,
+            keyName: x['INDEX_NAME'],
+            columnName: x['COLUMN_NAME'],
+            referenceTable: x['REFERENCED_TABLE_NAME'] ? x['REFERENCED_TABLE_NAME'] : '',
+            referenceColumns: x['REFERENCED_COLUMN_NAME'] ? x['REFERENCED_COLUMN_NAME'] : '',
+            keyType: KeyType[x['CONSTRAINT_TYPE']]
+          }));
+        }
+      );
+      return keys;
+    }));
+
+  }
+
+  primaryKeyFactory(conn: Connection, schema: string, table: string): Observable<TableKey[]> {
 
     const query = String.Format(this.db.PRIMARY_KEY_SQL,schema,table);
     return this.db.query(conn, query).pipe(
@@ -141,7 +209,7 @@ export class CompareService {
             referenceColumns: '',
             keyType: TableKeyType.PRIMARY_KEY
           });
-          return primaryKey;
+          return [primaryKey];
         }
       )
     );

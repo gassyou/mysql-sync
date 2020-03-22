@@ -22,7 +22,7 @@ export class Table implements IComparable {
   findDiff(other: Table): boolean {
 
     let hasDiff = false;
-    if (other === null)  {
+    if (!other)  {
       DomainEvent.getInstance().raise({left: this, right: other});
       hasDiff = true;
     } else {
@@ -39,7 +39,7 @@ export class Table implements IComparable {
       other.columns.forEach(
         right => {
           const left = this.columns.find(x => x.columnName === right.columnName);
-          if (left === undefined) {
+          if (!left) {
             DomainEvent.getInstance().raise({left: null, right});
             hasDiff = true;
           }
@@ -58,7 +58,7 @@ export class Table implements IComparable {
       other.keys.forEach(
         right => {
           const left = other.keys.find(x => x.keyName === right.keyName);
-          if (left === undefined) {
+          if (!left) {
             DomainEvent.getInstance().raise({left: null, right});
             hasDiff = true;
           }
