@@ -1,11 +1,12 @@
 import { TableKeyType } from './table-key-type';
 import { IComparable } from './comparable-interface';
 import { DomainEvent } from '../common/domain-event';
+import { DiffOfTableKey } from './diff-of-table-key';
 
 export class TableKey implements IComparable {
 
+  public readonly name: string;
   public readonly tableName: string;
-  public readonly keyName: string;
   public readonly keyColumns: string[] = [];
   public readonly referenceTable: string;
   public readonly referenceColumns: string;
@@ -22,15 +23,15 @@ export class TableKey implements IComparable {
     }
 
     if (this.keyType === TableKeyType.UNIQUE_KEY) {
-      return TableKeyType.UNIQUE_KEY + ' ' + this.keyName + ' ( ' + this.keyColumns.join(',') + ' )';
+      return TableKeyType.UNIQUE_KEY + ' ' + this.name + ' ( ' + this.keyColumns.join(',') + ' )';
     }
 
     if (this.keyType === TableKeyType.INDEX_KEY) {
-      return TableKeyType.INDEX_KEY + ' ' +  this.keyName + ' ( ' + this.keyColumns.join(',') + ' )';
+      return TableKeyType.INDEX_KEY + ' ' +  this.name + ' ( ' + this.keyColumns.join(',') + ' )';
     }
 
     if (this.keyType === TableKeyType.FOREIGN_KEY) {
-      return 'CONSTRAINT ' + this.keyName  + ' ' + TableKeyType.FOREIGN_KEY + ' ( ' + this.keyColumns.join(',') + ' )'
+      return 'CONSTRAINT ' + this.name  + ' ' + TableKeyType.FOREIGN_KEY + ' ( ' + this.keyColumns.join(',') + ' )'
               + 'REFERENCES ' + this.referenceTable + ' ( ' + this.referenceColumns + ' )';
     }
 
@@ -39,10 +40,10 @@ export class TableKey implements IComparable {
 
   public findDiff( other: TableKey): boolean  {
     if (!other) {
-      DomainEvent.getInstance().raise({left: this, right: other});
+      DomainEvent.getInstance().raise(new DiffOfTableKey({left: this, right: other}));
       return true;
     } else if ( this.toDDLString().toUpperCase() !== other.toDDLString().toUpperCase()) {
-      DomainEvent.getInstance().raise({left: this, right: other});
+      DomainEvent.getInstance().raise(new DiffOfTableKey({left: this, right: other}));
       return true;
     }
     return false;

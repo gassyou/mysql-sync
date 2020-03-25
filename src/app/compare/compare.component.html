@@ -4,7 +4,7 @@
 <div nz-row>
   <div nz-col nzSpan="4" class="side">
     <div class="header side_header">更新到数据库1</div>
-    <div class="side_content"></div>
+    <div class="side_content">{{sqlDiff.sql1}}</div>
   </div>
   <div nz-col nzSpan="16">
     <div nz-row class="header">
@@ -23,9 +23,6 @@
   </div>
   <div nz-col nzSpan="4" class="side">
     <div class="header side_header">更新到数据库2</div>
-    <div class="side_content">
-      <nz-spin [nzSpinning]="isSpinning">
-      </nz-spin>
-    </div>
+    <div class="side_content">{{sqlDiff.sql2}}</div>
   </div>
 </div>

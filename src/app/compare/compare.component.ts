@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CompareService } from '../service/compare.service';
 import { Router } from '@angular/router';
-import { DomainEvent, EventAction } from '../common/domain-event';
 
 @Component({
   selector: 'app-compare',
@@ -18,6 +17,8 @@ export class CompareComponent implements OnInit {
 
   isSpinning = false;
 
+  sqlDiff:any = {};
+
   constructor(
     public compare: CompareService,
     private router: Router
@@ -31,14 +32,12 @@ export class CompareComponent implements OnInit {
     this.host2 = this.compare.rightConnCofing.host;
     this.name2 = this.compare.rightConnCofing.database;
 
+    this.compare.diffItemSelected$.asObservable().subscribe(
+      data => {
+        this.sqlDiff = data;
+      }
+    );
 
-
-    const showDiff:EventAction = (e: any) => {
-      console.log(e);
-
-    }
-
-    DomainEvent.getInstance().Register(showDiff);
   }
 
 

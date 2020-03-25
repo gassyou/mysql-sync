@@ -79,8 +79,7 @@ export class DbService {
                             where
                               CONSTRAINT_SCHEMA = '{0}'
                               and TABLE_NAME = '{1}'
-                              and constraint_name = 'PRIMARY'
-                            order by ORDINAL_POSITION`;
+                              and constraint_name = 'PRIMARY'`;
 
   public FOREIGN_KEY_SQL = `select
                               CONSTRAINT_NAME,
@@ -93,32 +92,49 @@ export class DbService {
                             where
                               CONSTRAINT_SCHEMA = '{0}'
                               and TABLE_NAME = '{1}'
-                              and (REFERENCED_TABLE_NAME != null or REFERENCED_TABLE_NAME != '')
-                            order by ORDINAL_POSITION`;
+                              and (REFERENCED_TABLE_NAME != null or REFERENCED_TABLE_NAME != '')`;
 
-  public UNIQUE_KEY_SQL = `select c.TABLE_NAME ,c.CONSTRAINT_NAME, GROUP_CONCAT(CAST(c.COLUMN_NAME AS CHAR))as COLUMNS_NAME from
-                          (
-                            select distinct a.TABLE_NAME ,a.CONSTRAINT_NAME ,b.COLUMN_NAME
-                            from information_schema.TABLE_CONSTRAINTS as a
-                            left join information_schema.key_column_usage as b
-                            on a.CONSTRAINT_NAME  = b.CONSTRAINT_NAME
-                            where a.CONSTRAINT_SCHEMA = '{0}'
-                            and a.CONSTRAINT_TYPE  = 'UNIQUE'
-                            and a.TABLE_NAME  = '{1}'
-                          ) as c
-                          group by c.TABLE_NAME ,c.CONSTRAINT_NAME `;
+  public UNIQUE_KEY_SQL = `select
+                            c.TABLE_NAME ,
+                            c.CONSTRAINT_NAME,
+                            GROUP_CONCAT(c.COLUMN_NAME ORDER BY c.COLUMN_NAME)as COLUMNS_NAME
+                          from
+                            (
+                            select
+                              distinct a.TABLE_NAME ,
+                              a.CONSTRAINT_NAME ,
+                              b.COLUMN_NAME
+                            from
+                              information_schema.TABLE_CONSTRAINTS as a
+                            left join information_schema.key_column_usage as b on
+                              a.CONSTRAINT_NAME = b.CONSTRAINT_NAME
+                            where
+                              a.CONSTRAINT_SCHEMA = '{0}'
+                              and a.CONSTRAINT_TYPE = 'UNIQUE'
+                              and a.TABLE_NAME = '{1}') as c
+                          group by
+                            c.TABLE_NAME ,
+                            c.CONSTRAINT_NAME `;
 
   public INDEX_KEY_SQL = `select
-                            distinct TABLE_NAME ,
-                            INDEX_NAME ,
-                            GROUP_CONCAT(CAST(COLUMN_NAME AS CHAR)) as COLUMNS_NAME
+                            c.TABLE_NAME,
+                            c.INDEX_NAME,
+                            GROUP_CONCAT(c.COLUMN_NAME ORDER BY c.COLUMN_NAME)as COLUMNS_NAME
                           from
-                            INFORMATION_SCHEMA.STATISTICS
-                          where
-                            TABLE_SCHEMA = '{0}'
-                            and TABLE_NAME = '{1}'
-                            and INDEX_NAME != 'primary'
-                          group by TABLE_NAME, INDEX_NAME `;
+                            (
+                            select
+                              distinct TABLE_NAME ,
+                              INDEX_NAME ,
+                              COLUMN_NAME
+                            from
+                              INFORMATION_SCHEMA.STATISTICS
+                            where
+                              TABLE_SCHEMA = '{0}'
+                              and TABLE_NAME = '{1}'
+                              and INDEX_NAME != 'primary') as c
+                          group by
+                            c.TABLE_NAME ,
+                            c.INDEX_NAME`;
   constructor() { }
 
   createConnection(config: ConnectionConfig): Observable<Connection> {

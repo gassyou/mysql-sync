@@ -2,10 +2,11 @@ import { TableColumn } from './table-column';
 import { TableKey } from './table-key';
 import { IComparable } from './comparable-interface';
 import { DomainEvent } from '../common/domain-event';
+import { DiffOfTable } from './diff-of-table';
 
 export class Table implements IComparable {
 
-  public readonly tableName: string;
+  public readonly name: string;
   public readonly columns: TableColumn[] = [];
   public readonly keys: TableKey[] = [];
   public readonly tableDDL: string;
@@ -23,13 +24,13 @@ export class Table implements IComparable {
 
     let hasDiff = false;
     if (!other)  {
-      DomainEvent.getInstance().raise({left: this, right: other});
+      DomainEvent.getInstance().raise(new DiffOfTable({left: this, right: other}));
       hasDiff = true;
     } else {
 
       this.columns.forEach(
         left => {
-          const right = other.columns.find(x => x.columnName === left.columnName);
+          const right = other.columns.find(x => x.name === left.name);
           if (left.findDiff(right)) {
             hasDiff = true;
           }
@@ -38,9 +39,9 @@ export class Table implements IComparable {
 
       other.columns.forEach(
         right => {
-          const left = this.columns.find(x => x.columnName === right.columnName);
+          const left = this.columns.find(x => x.name === right.name);
           if (!left) {
-            DomainEvent.getInstance().raise({left: null, right});
+            DomainEvent.getInstance().raise(new DiffOfTable({left: null, right}));
             hasDiff = true;
           }
         }
@@ -48,7 +49,7 @@ export class Table implements IComparable {
 
       this.keys.forEach(
         left => {
-          const right = other.keys.find(x => x.keyName === left.keyName);
+          const right = other.keys.find(x => x.name === left.name);
           if (left.findDiff(right)) {
             hasDiff = true;
           }
@@ -57,9 +58,9 @@ export class Table implements IComparable {
 
       other.keys.forEach(
         right => {
-          const left = other.keys.find(x => x.keyName === right.keyName);
+          const left = other.keys.find(x => x.name === right.name);
           if (!left) {
-            DomainEvent.getInstance().raise({left: null, right});
+            DomainEvent.getInstance().raise(new DiffOfTable({left: null, right}));
             hasDiff = true;
           }
         }

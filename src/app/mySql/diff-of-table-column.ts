@@ -5,18 +5,22 @@ export class DiffOfTableColumn implements IDifference {
   left: TableColumn;
   right: TableColumn;
 
+  public constructor(val = {}) {
+    Object.assign(this, val);
+  }
+
 
   syncToLeftSql(): string {
     let returnValue = '';
 
-    if (this.left !== null) {
-      if (this.right === null) {
-        returnValue = `alter table ${this.left.tableName} drop column ${this.left.columnName}`;
+    if (this.left) {
+      if (!this.right) {
+        returnValue = `alter table ${this.left.tableName} drop column ${this.left.name}`;
       } else {
         returnValue = `alter table ${this.right.tableName} modify column ${this.right.toDDLString()}`;
       }
     } else {
-      if (this.right !== null) {
+      if (this.right) {
         returnValue = `alter table ${this.right.tableName} add column ${this.right.toDDLString()}`;
       }
     }
@@ -27,14 +31,14 @@ export class DiffOfTableColumn implements IDifference {
     let returnValue = '';
 
 
-    if (this.right !== null) {
-      if (this.left === null) {
-        returnValue = `alter table ${this.right.tableName} drop column ${this.right.columnName}`;
+    if (this.right) {
+      if (!this.left) {
+        returnValue = `alter table ${this.right.tableName} drop column ${this.right.name}`;
       } else {
         returnValue = `alter table ${this.left.tableName} modify column ${this.left.toDDLString()}`;
       }
     } else {
-      if (this.left !== null) {
+      if (this.left) {
         returnValue = `alter table ${this.left.tableName} add column ${this.left.toDDLString()}`;
       }
     }

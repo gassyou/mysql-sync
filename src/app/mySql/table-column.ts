@@ -1,10 +1,11 @@
 import { IComparable } from './comparable-interface';
 import { DomainEvent } from '../common/domain-event';
+import { DiffOfTableColumn } from './diff-of-table-column';
 
 export class TableColumn implements IComparable {
 
+  public readonly name: string;
   public readonly tableName: string;
-  public readonly columnName: string;
   public readonly dataType: string;
   public readonly nullable: boolean;
   public readonly autoIncrement: boolean;
@@ -17,7 +18,7 @@ export class TableColumn implements IComparable {
   }
 
   public toDDLString(): string {
-    return '`' + this.columnName + '` '
+    return '`' + this.name + '` '
       + this.dataType + ' '
       + this.nullable ? '' : 'NOT' + ' '
       + this.autoIncrement ? 'AUTO_INCREMENT' : '' + ' '
@@ -29,10 +30,10 @@ export class TableColumn implements IComparable {
   public findDiff(other: TableColumn): boolean {
 
     if (!other) {
-      DomainEvent.getInstance().raise({left: this, right: other});
+      DomainEvent.getInstance().raise(new DiffOfTableColumn({left: this, right: other}));
       return true;
     } else if ( this.toDDLString().toUpperCase() !== other.toDDLString().toUpperCase()) {
-      DomainEvent.getInstance().raise({left: this, right: other});
+      DomainEvent.getInstance().raise(new DiffOfTableColumn({left: this, right: other}));
       return true;
     }
     return false;

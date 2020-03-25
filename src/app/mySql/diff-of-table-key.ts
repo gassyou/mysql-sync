@@ -22,17 +22,17 @@ export class DiffOfTableKey implements IDifference {
   syncToLeftSql(): string {
 
     let returnValue = '';
-    if (this.left !== null ) {
+    if (this.left) {
       if (this.left.keyType === TableKeyType.PRIMARY_KEY) {
         returnValue = String.Format(this.DROP_PRIMARY_KEY, this.left.tableName) + '<br/>';
       } else if (this.left.keyType === TableKeyType.FOREIGN_KEY) {
-        returnValue = String.Format(this.DROP_FOREIGN_KEY, this.left.tableName, this.left.keyName) + '<br/>';
+        returnValue = String.Format(this.DROP_FOREIGN_KEY, this.left.tableName, this.left.name) + '<br/>';
       } else {
-        returnValue = String.Format(this.DROP_KEY, this.left.tableName, this.left.keyName) + '<br/>';
+        returnValue = String.Format(this.DROP_KEY, this.left.tableName, this.left.name) + '<br/>';
       }
     }
 
-    if (this.right !== null) {
+    if (this.right) {
       returnValue = returnValue + String.Format(this.ADD_KEY, this.right.tableName, this.right.toDDLString());
     }
 
@@ -43,17 +43,17 @@ export class DiffOfTableKey implements IDifference {
   syncToRightSql(): string {
 
     let returnValue = '';
-    if (this.right !== null ) {
+    if (this.right ) {
       if (this.right.keyType === TableKeyType.PRIMARY_KEY) {
         returnValue = String.Format(this.DROP_PRIMARY_KEY, this.right.tableName) + '<br/>';
       } else if (this.right.keyType === TableKeyType.FOREIGN_KEY) {
-        returnValue = String.Format(this.DROP_FOREIGN_KEY, this.right.tableName, this.right.keyName) + '<br/>';
+        returnValue = String.Format(this.DROP_FOREIGN_KEY, this.right.tableName, this.right.name) + '<br/>';
       } else {
-        returnValue = String.Format(this.DROP_KEY, this.right.tableName, this.right.keyName) + '<br/>';
+        returnValue = String.Format(this.DROP_KEY, this.right.tableName, this.right.name) + '<br/>';
       }
     }
 
-    if (this.left !== null) {
+    if (this.left) {
       returnValue = returnValue + String.Format(this.ADD_KEY, this.left.tableName, this.left.toDDLString());
     }
 

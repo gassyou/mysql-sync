@@ -5,13 +5,18 @@ export class DiffOfTableFunc implements IDifference {
   left: TableFunction;
   right: TableFunction;
 
+  public constructor(val = {}) {
+    Object.assign(this, val);
+  }
+
+
   syncToLeftSql(): string {
     let returnValue = '';
-    if (this.left !== null) {
-      returnValue = `drop ${this.left.funcType} ${this.left.funcName}<br/>`;
+    if (this.left) {
+      returnValue = `drop ${this.left.funcType} ${this.left.name}<br/>`;
     }
 
-    if (this.right !== null) {
+    if (this.right) {
       returnValue = returnValue + this.right.toDDLString();
     }
 
@@ -20,11 +25,11 @@ export class DiffOfTableFunc implements IDifference {
 
   syncToRightSql(): string {
     let returnValue = '';
-    if (this.right !== null) {
-      returnValue = `drop ${this.right.funcType} ${this.right.funcName}<br/>`;
+    if (this.right) {
+      returnValue = `drop ${this.right.funcType} ${this.right.name}<br/>`;
     }
 
-    if (this.left !== null) {
+    if (this.left) {
       returnValue = returnValue + this.left.toDDLString();
     }
 

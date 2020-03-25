@@ -1,10 +1,11 @@
 import { IComparable } from './comparable-interface';
 import { DomainEvent } from '../common/domain-event';
+import { DiffOfTableView } from './diff-of-table-view';
 
 
 export class TableView implements IComparable {
 
-  public readonly viewName: string;
+  public readonly name: string;
   public readonly viewBody: string;
 
   public constructor(val = {}) {
@@ -18,10 +19,10 @@ export class TableView implements IComparable {
   findDiff(other: TableView): boolean {
 
     if (!other) {
-      DomainEvent.getInstance().raise({left: this, right: other});
+      DomainEvent.getInstance().raise(new DiffOfTableView({left: this, right: other}));
       return true;
     } else if ( this.toDDLString().toUpperCase() !== other.toDDLString().toUpperCase()) {
-      DomainEvent.getInstance().raise({left: this, right: other});
+      DomainEvent.getInstance().raise(new DiffOfTableView({left: this, right: other}));
       return true;
     }
     return false;

@@ -9,7 +9,6 @@ import { TableColumn } from '../mySql/table-column';
 import { TableKey } from '../mySql/table-key';
 import { TableKeyType, KeyType } from '../mySql/table-key-type';
 import { TableFunction } from '../mySql/table-func';
-import { DomainEvent } from '../common/domain-event';
 
 @Injectable({
   providedIn: 'root'
@@ -17,6 +16,8 @@ import { DomainEvent } from '../common/domain-event';
 export class CompareService {
 
   public connection$: Subject<boolean> = new Subject();
+  public diffItemSelected$: Subject<{sql1:string, sql2:string}> = new Subject();
+  public compareProgression$: Subject<number> = new Subject();
 
   private leftConnect: Connection = null;
   private rightConnect: Connection = null;
@@ -55,30 +56,31 @@ export class CompareService {
       return false;
     }
 
-    console.log(new Date());
     const leftTables$ = this.allTables(this.leftConnect,this.leftConnCofing.database);
     const rightTables$ = this.allTables(this.rightConnect,this.rightConnCofing.database);
 
+    this.compareProgression$.next(5);
     zip(leftTables$,rightTables$).subscribe(
       ([leftTables,rightTables]) => {
 
+        this.compareProgression$.next(80);
         leftTables.forEach(
           left => {
-            const right = rightTables.find(x=> x.tableName === left.tableName);
+            const right = rightTables.find(x=> x.name === left.name);
             left.findDiff(right);
           }
         );
-        console.log(new Date());
+
+        this.compareProgression$.next(90);
         rightTables.forEach(
           right => {
-            const left = leftTables.find(x=>x.tableName === right.tableName);
+            const left = leftTables.find(x=>x.name === right.name);
             right.findDiff(left);
           }
         );
-        console.log(rightTables);
-        console.log(new Date());
-    });
+        this.compareProgression$.next(100);
 
+    });
 
     return true;
   }
@@ -87,7 +89,7 @@ export class CompareService {
 
     const allTables$ = this.db.query(conn,this.db.ALL_TABLES_SQL).pipe(
       map(data =>{
-
+        this.compareProgression$.next(50);
         const tables = [];
         data.results.map( x=>{
           tables.push(x['Tables_in_' + schema]);
@@ -108,13 +110,13 @@ export class CompareService {
     const columnsObservable = this.columnFactory(conn, tableName);
     const keysObservable = this.allKeyFactory(conn, schema,tableName);
     const ddlObservable = this.getTableDDL(conn,tableName);
-    return zip(columnsObservable,keysObservable).pipe(
-      map(([columns,keys])=>{
+    return zip(columnsObservable,keysObservable,ddlObservable).pipe(
+      map(([columns,keys,ddl])=>{
         return new Table({
-          tableName: tableName,
+          name: tableName,
           columns: columns,
           keys: keys,
-          tableDDL: ''
+          tableDDL: ddl
         })
       })
     );
@@ -138,7 +140,7 @@ export class CompareService {
         const results: TableKey[] = pkeys.concat(fKeys,uKeys,iKeys);
         const allKeys: TableKey[] = [];
         results.map(x=>{
-          if(!allKeys.find(y=>{ return y.keyName === x.keyName})) {
+          if(!allKeys.find(y=>{ return y.name === x.name})) {
             allKeys.push(x);
           }
         });
@@ -157,8 +159,8 @@ export class CompareService {
           data.results.map(
             x => {
               columns.push( new TableColumn({
+                name: x['Field'],
                 tableName: table,
-                columnName: x['Field'],
                 dataType: x['Type'],
                 nullable: x['Null']==="YES" ? true : false,
                 autoIncrement:  x['Extra']==="auto_increment" ? true : false,
@@ -181,8 +183,8 @@ export class CompareService {
       data.results.map(
         x => {
           keys.push(new TableKey({
+            name: x['INDEX_NAME'],
             tableName: tableName,
-            keyName: x['INDEX_NAME'],
             columnName: x['COLUMN_NAME'],
             referenceTable: x['REFERENCED_TABLE_NAME'] ? x['REFERENCED_TABLE_NAME'] : '',
             referenceColumns: x['REFERENCED_COLUMN_NAME'] ? x['REFERENCED_COLUMN_NAME'] : '',
@@ -202,8 +204,8 @@ export class CompareService {
       map(
         data => {
           const primaryKey: TableKey = new TableKey({
+            name: TableKeyType.PRIMARY_KEY,
             tableName: table,
-            keyName: TableKeyType.PRIMARY_KEY,
             keyColumns: data.results.map(x=>x['column_name']),
             referenceTable: '',
             referenceColumns: '',
@@ -224,8 +226,8 @@ export class CompareService {
 
         data.results.map( x=> {
           foreignKeys.push(new TableKey({
+            name: x['CONSTRAINT_NAME'],
             tableName: table,
-            keyName: x['CONSTRAINT_NAME'],
             keyColumns: [x['column_name']],
             referenceTable: x['referenced_table_name'],
             referenced_column_name: x['referenced_column_name'],
@@ -247,8 +249,8 @@ export class CompareService {
 
         data.results.map( x=> {
           uniqueKeys.push(new TableKey({
+            name: x['CONSTRAINT_NAME'],
             tableName: table,
-            keyName: x['CONSTRAINT_NAME'],
             keyColumns: x['COLUMNS_NAME'].split(','),
             referenceTable: '',
             referenced_column_name: '',
@@ -269,8 +271,8 @@ export class CompareService {
 
         data.results.map( x=> {
           indexKeys.push(new TableKey({
+            name: x['INDEX_NAME'],
             tableName: table,
-            keyName: x['INDEX_NAME'],
             keyColumns: x['COLUMNS_NAME'].split(','),
             referenceTable: '',
             referenced_column_name: '',
@@ -292,7 +294,7 @@ export class CompareService {
 
         data.results.map( x=> {
           funcitons.push(new TableFunction({
-            funcName: x['name'],
+            name: x['name'],
             funcType: x['type'],
             funcBody: x['body'],
           }));

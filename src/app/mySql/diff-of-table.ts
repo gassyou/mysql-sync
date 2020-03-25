@@ -13,11 +13,11 @@ export class DiffOfTable implements IDifference {
   syncToLeftSql(): string {
 
     let returnValue = '';
-    if (this.left !== null) {
-      returnValue = `drop table ${this.left.tableName}<br/>`;
+    if (this.left) {
+      returnValue = `drop table ${this.left.name}<br/>`;
     }
 
-    if (this.right !== null) {
+    if (this.right) {
       returnValue = returnValue + this.right.toDDLString();
     }
 
@@ -28,11 +28,11 @@ export class DiffOfTable implements IDifference {
   syncToRightSql(): string {
 
     let returnValue = '';
-    if (this.right !== null) {
-      returnValue = `drop table ${this.right.tableName}<br/>`;
+    if (this.right) {
+      returnValue = `drop table ${this.right.name}<br/>`;
     }
 
-    if (this.left !== null) {
+    if (this.left) {
       returnValue = returnValue + this.left.toDDLString();
     }
 
