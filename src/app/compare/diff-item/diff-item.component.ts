@@ -83,7 +83,11 @@ export class DiffItemComponent implements OnInit {
   }
 
   getDiffItemIds(data: IDifference): string {
+
+
     const diffType = this.getDiffItemType(data);
+    console.log("aaa:"+diffType);
+
     if(diffType !== DiffType.COLUMN && diffType !== DiffType.KEY) {
       return this.diffItems.length.toString();
     } else {
@@ -102,8 +106,8 @@ export class DiffItemComponent implements OnInit {
 
   getDiffItemType(data: IDifference): DiffType {
 
-    const comparable = data.left ? data.left: data.left;
-
+    const comparable = data.left ? data.left: data.right;
+    console.log("aaa:"+comparable);
     if(comparable instanceof Table) {
       return DiffType.TABLE;
     } else if(comparable instanceof TableColumn) {
@@ -118,7 +122,7 @@ export class DiffItemComponent implements OnInit {
   }
 
   getBelongedTableName(data:IDifference): string {
-    const comparable = data.left ? data.left: data.left;
+    const comparable = data.left ? data.left: data.right;
     return comparable.tableName;
   }
 
