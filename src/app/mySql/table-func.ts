@@ -20,10 +20,10 @@ export class TableFunction implements IComparable {
   findDiff(other: TableFunction): boolean {
 
     if (!other) {
-      DomainEvent.getInstance().raise(new DiffOfTableFunc({left: this, right: other}));
+      DomainEvent.getInstance().raise('diff-found',new DiffOfTableFunc({left: this, right: other}));
       return true;
     } else if ( this.toDDLString().toUpperCase() !== other.toDDLString().toUpperCase()) {
-      DomainEvent.getInstance().raise(new DiffOfTableFunc({left: this, right: other}));
+      DomainEvent.getInstance().raise('diff-found',new DiffOfTableFunc({left: this, right: other}));
       return true;
     }
     return false;

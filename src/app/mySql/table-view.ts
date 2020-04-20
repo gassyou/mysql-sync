@@ -19,10 +19,10 @@ export class TableView implements IComparable {
   findDiff(other: TableView): boolean {
 
     if (!other) {
-      DomainEvent.getInstance().raise(new DiffOfTableView({left: this, right: other}));
+      DomainEvent.getInstance().raise('diff-found', new DiffOfTableView({left: this, right: other}));
       return true;
     } else if ( this.toDDLString().toUpperCase() !== other.toDDLString().toUpperCase()) {
-      DomainEvent.getInstance().raise(new DiffOfTableView({left: this, right: other}));
+      DomainEvent.getInstance().raise('diff-found', new DiffOfTableView({left: this, right: other}));
       return true;
     }
     return false;

@@ -14,6 +14,12 @@ import { CompareComponent } from './compare/compare.component';
 import { ConnectionFormComponent } from './db-connection/connection-form/connection-form.component';
 import { DiffItemComponent } from './compare/diff-item/diff-item.component';
 
+import { IconDefinition } from '@ant-design/icons-angular';
+import { NzIconModule, NZ_ICON_DEFAULT_TWOTONE_COLOR, NZ_ICONS } from 'ng-zorro-antd/icon';
+import { TableOutline } from '@ant-design/icons-angular/icons';
+
+const icons: IconDefinition[] = [ TableOutline ];
+
 registerLocaleData(zh);
 
 @NgModule({
@@ -33,7 +39,11 @@ registerLocaleData(zh);
     BrowserAnimationsModule,
     ReactiveFormsModule
   ],
-  providers: [{ provide: NZ_I18N, useValue: zh_CN }],
+  providers: [
+    { provide: NZ_I18N, useValue: zh_CN },
+    { provide: NZ_ICON_DEFAULT_TWOTONE_COLOR, useValue: '#00ff00' }, // 不提供的话，即为 Ant Design 的主题蓝色
+    { provide: NZ_ICONS, useValue: icons }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

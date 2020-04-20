@@ -1,6 +1,12 @@
+import { IDifference } from "../mySql/difference-interface";
 
-export type EventAction = (eventArgs: any) => void;
+// export type EventAction = (eventArgs: any) => void;
+export type EventType = 'diff-found' | 'progress';
 
+export interface EventAction {
+  eventType: EventType;
+  handle: (eventArgs: IDifference | Number) => void
+}
 
 export class DomainEvent {
 
@@ -16,13 +22,13 @@ export class DomainEvent {
     return this.instance;
   }
 
-  public raise(eventArgs: any) {
-    // console.log(eventArgs);
-    this.actionList.forEach(
+  public raise(eventType: EventType, eventArgs: IDifference | Number) {
+
+    const actions = this.actionList.filter(action => action.eventType === eventType);
+    actions.forEach(
       action => {
-        action(eventArgs);
-      }
-    );
+        action.handle(eventArgs);
+    });
   }
 
   public Register(action: EventAction) {

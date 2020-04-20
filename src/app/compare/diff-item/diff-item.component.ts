@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { DiffItemViewModel, DiffType } from './diff-item-view-model';
-import { DomainEvent, EventAction } from './../../common/domain-event';
+import { DomainEvent } from './../../common/domain-event';
 import { CompareService } from './../../service/compare.service';
 import { IDifference } from './../../mySql/difference-interface';
 import { Table } from './../../mySql/table';
@@ -17,17 +17,21 @@ export class DiffItemComponent implements OnInit {
 
   selectedId = '';
   diffItems: DiffItemViewModel[] = [];
-  percent = 0;
+  percent: number = 0;
 
   constructor(
     public compare: CompareService,
-  ) { }
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit() {
 
-    this.compare.compareProgression$.asObservable().subscribe(x=>{this.percent = x;console.log(x)});
+    const showDiff = (e: IDifference) => {
 
-    const showDiff:EventAction = (e: IDifference) => {
+      if(!e) {
+        return ;
+      }
+
       const diffItem: DiffItemViewModel = {
         id: this.getDiffItemIds(e),
         type: this.getDiffItemType(e),
@@ -55,7 +59,17 @@ export class DiffItemComponent implements OnInit {
         this.diffItems.push(diffItem);
       }
     }
-    DomainEvent.getInstance().Register(showDiff);
+
+    DomainEvent.getInstance().Register({eventType:'diff-found', handle:showDiff});
+
+    DomainEvent.getInstance().Register({eventType:'progress', handle:(e: number)=>{
+      if(!e) {
+        return ;
+      }
+      this.percent = Number.parseFloat(e.toFixed(2));
+      this.cdr.detectChanges();
+    }})
+    this.compare.doComparetion();
   }
 
   onItemClick(diff: DiffItemViewModel) {

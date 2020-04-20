@@ -20,12 +20,10 @@ export class DbConnectionComponent implements OnInit {
 
   doConnection() {
     this.compare.connection$.next(true);
-
   }
 
   doNext() {
-    const result = this.compare.doComparetion();
-    if(!result) {
+    if(!this.compare.isConnected()) {
       this.message.create('error','请先连接数据库！');
     } else {
       this.router.navigate(['compare']);

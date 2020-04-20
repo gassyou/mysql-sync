@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Subject, Observable, from, of, zip} from 'rxjs';
-import { map, catchError, mergeMap, toArray,mergeAll} from 'rxjs/operators';
+import { map, catchError, mergeMap, toArray,mergeAll, scan} from 'rxjs/operators';
 import { Connection, ConnectionConfig } from 'mysql';
 import { DbService } from './db.service';
 import { Table } from '../mySql/table';
@@ -9,6 +9,7 @@ import { TableColumn } from '../mySql/table-column';
 import { TableKey } from '../mySql/table-key';
 import { TableKeyType, KeyType } from '../mySql/table-key-type';
 import { TableFunction } from '../mySql/table-func';
+import { DomainEvent } from '../common/domain-event';
 
 @Injectable({
   providedIn: 'root'
@@ -17,13 +18,14 @@ export class CompareService {
 
   public connection$: Subject<boolean> = new Subject();
   public diffItemSelected$: Subject<{sql1:string, sql2:string}> = new Subject();
-  public compareProgression$: Subject<number> = new Subject();
 
   private leftConnect: Connection = null;
   private rightConnect: Connection = null;
 
   public leftConnCofing: ConnectionConfig = null;
   public rightConnCofing: ConnectionConfig = null;
+
+  private counter = 0;
 
   constructor(
     public db: DbService
@@ -51,45 +53,49 @@ export class CompareService {
     );
   }
 
-  doComparetion():boolean {
+  isConnected():boolean {
     if(this.leftConnect === null || this.rightConnect === null) {
       return false;
     }
+    return true;
+  }
+
+
+  doComparetion(){
+
+    this.counter = 0 ;
+    DomainEvent.getInstance().raise('progress', 5);
+    console.log(new Date());
 
     const leftTables$ = this.allTables(this.leftConnect,this.leftConnCofing.database);
     const rightTables$ = this.allTables(this.rightConnect,this.rightConnCofing.database);
 
-    this.compareProgression$.next(5);
-    zip(leftTables$,rightTables$).subscribe(
+    return zip(leftTables$,rightTables$).subscribe(
       ([leftTables,rightTables]) => {
-
-        this.compareProgression$.next(80);
+        DomainEvent.getInstance().raise('progress', 95);
         leftTables.forEach(
           left => {
             const right = rightTables.find(x=> x.name === left.name);
             left.findDiff(right);
           }
         );
-
-        this.compareProgression$.next(90);
         rightTables.forEach(
           right => {
             const left = leftTables.find(x=>x.name === right.name);
             right.findDiff(left);
           }
         );
-        this.compareProgression$.next(100);
+        DomainEvent.getInstance().raise('progress', 100);
+        console.log(new Date());
+    }
+    );
 
-    });
-
-    return true;
   }
 
   allTables(conn: Connection, schema: string): Observable<Table[]> {
 
     const allTables$ = this.db.query(conn,this.db.ALL_TABLES_SQL).pipe(
       map(data =>{
-        this.compareProgression$.next(50);
         const tables = [];
         data.results.map( x=>{
           tables.push(x['Tables_in_' + schema]);
@@ -112,6 +118,15 @@ export class CompareService {
     const ddlObservable = this.getTableDDL(conn,tableName);
     return zip(columnsObservable,keysObservable,ddlObservable).pipe(
       map(([columns,keys,ddl])=>{
+
+        if(this.counter >= 45) {
+          this.counter = this.counter + 0.03
+        } else {
+          this.counter++
+        }
+
+        DomainEvent.getInstance().raise('progress',5 + this.counter);
+
         return new Table({
           name: tableName,
           columns: columns,

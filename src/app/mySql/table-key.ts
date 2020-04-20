@@ -40,10 +40,10 @@ export class TableKey implements IComparable {
 
   public findDiff( other: TableKey): boolean  {
     if (!other) {
-      DomainEvent.getInstance().raise(new DiffOfTableKey({left: this, right: other}));
+      DomainEvent.getInstance().raise('diff-found', new DiffOfTableKey({left: this, right: other}));
       return true;
     } else if ( this.toDDLString().toUpperCase() !== other.toDDLString().toUpperCase()) {
-      DomainEvent.getInstance().raise(new DiffOfTableKey({left: this, right: other}));
+      DomainEvent.getInstance().raise('diff-found', new DiffOfTableKey({left: this, right: other}));
       return true;
     }
     return false;

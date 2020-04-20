@@ -30,10 +30,10 @@ export class TableColumn implements IComparable {
   public findDiff(other: TableColumn): boolean {
 
     if (!other) {
-      DomainEvent.getInstance().raise(new DiffOfTableColumn({left: this, right: other}));
+      DomainEvent.getInstance().raise('diff-found', new DiffOfTableColumn({left: this, right: other}));
       return true;
     } else if ( this.toDDLString().toUpperCase() !== other.toDDLString().toUpperCase()) {
-      DomainEvent.getInstance().raise(new DiffOfTableColumn({left: this, right: other}));
+      DomainEvent.getInstance().raise('diff-found', new DiffOfTableColumn({left: this, right: other}));
       return true;
     }
     return false;
