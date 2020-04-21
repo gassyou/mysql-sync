@@ -10,6 +10,9 @@ import { TableKey } from '../mySql/table-key';
 import { TableKeyType, KeyType } from '../mySql/table-key-type';
 import { TableFunction } from '../mySql/table-func';
 import { DomainEvent } from '../common/domain-event';
+import { TableView } from '../mySql/table-view';
+import { DiffOfTableFunc } from '../mySql/diff-of-table-func';
+import { DiffOfTableView } from '../mySql/diff-of-table-view';
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +20,7 @@ import { DomainEvent } from '../common/domain-event';
 export class CompareService {
 
   public connection$: Subject<boolean> = new Subject();
-  public diffItemSelected$: Subject<{sql1:string, sql2:string}> = new Subject();
+  public diffItemSelected$: Subject<{left:string, right:string}> = new Subject();
 
   private leftConnect: Connection = null;
   private rightConnect: Connection = null;
@@ -70,8 +73,17 @@ export class CompareService {
     const leftTables$ = this.allTables(this.leftConnect,this.leftConnCofing.database);
     const rightTables$ = this.allTables(this.rightConnect,this.rightConnCofing.database);
 
-    return zip(leftTables$,rightTables$).subscribe(
-      ([leftTables,rightTables]) => {
+    const leftFunctions$ = this.functionFactory(this.leftConnect, this.leftConnCofing.database);
+    const rightFunction$ = this.functionFactory(this.rightConnect, this.rightConnCofing.database);
+
+    const leftViews$ = this.viewFactory(this.leftConnect, this.leftConnCofing.database);
+    const rightViews$ = this.viewFactory(this.rightConnect, this.rightConnCofing.database);
+
+
+
+    zip(leftTables$,rightTables$,leftFunctions$,rightFunction$ ,leftViews$,rightViews$).subscribe(
+      ([leftTables,rightTables, leftFunctions, rightFunctions, leftViews, rightViews]) => {
+
         DomainEvent.getInstance().raise('progress', 95);
         leftTables.forEach(
           left => {
@@ -85,7 +97,39 @@ export class CompareService {
             right.findDiff(left);
           }
         );
+
+        leftFunctions.forEach(left => {
+          const right = rightFunctions.find(x=>x.name === left.name);
+          left.findDiff(right);
+        });
+
+        rightFunctions.forEach(right=>{
+          const left = leftFunctions.find(x=>x.name === right.name);
+          if(!left) {
+            DomainEvent.getInstance().raise('diff-found',new DiffOfTableFunc({left: null, right}));
+          }
+        });
+
+
+        leftViews.forEach(left => {
+          const right = rightViews.find(x=>x.name === left.name);
+          left.findDiff(right);
+        });
+
+        rightViews.forEach(right=>{
+          const left = leftViews.find(x=>x.name === right.name);
+          if(!left) {
+            DomainEvent.getInstance().raise('diff-found',new DiffOfTableView({left: null, right}));
+          }
+        });
+
         DomainEvent.getInstance().raise('progress', 100);
+        leftTables = [];
+        rightTables = [];
+        leftFunctions = [];
+        rightFunctions = [];
+        leftViews = [];
+        rightViews = [];
         console.log(new Date());
     }
     );
@@ -319,6 +363,27 @@ export class CompareService {
       })
     );
   }
+
+  viewFactory(conn: Connection, schema: string): Observable<TableView[]> {
+    const query = String.Format(this.db.ALL_VIEW_SQL,schema);
+
+    return this.db.query(conn,query).pipe(
+      map(data=>{
+        const views: TableView[] = [];
+
+        data.results.map( x=> {
+          views.push(new TableView({
+            name: x['TABLE_NAME'],
+            viewBody: x['VIEW_DEFINITION']
+          }))
+        });
+        return views;
+      })
+    );
+  }
+
+
+
 
   exit() {
     if(this.leftConnect) {

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CompareService } from '../service/compare.service';
 import { Router } from '@angular/router';
 
@@ -21,7 +21,8 @@ export class CompareComponent implements OnInit {
 
   constructor(
     public compare: CompareService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) { }
 
 
@@ -35,6 +36,7 @@ export class CompareComponent implements OnInit {
     this.compare.diffItemSelected$.asObservable().subscribe(
       data => {
         this.sqlDiff = data;
+        this.cdr.markForCheck();
       }
     );
 

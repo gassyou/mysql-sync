@@ -1,12 +1,21 @@
-import { IDifference } from './difference-interface';
+import { IDifference, DiffType } from './difference-interface';
 import { TableFunction } from './table-func';
 
 export class DiffOfTableFunc implements IDifference {
+
+
+  public readonly name?: string;
+  public readonly tableName?: string;
+  public readonly type?: DiffType;
   left: TableFunction;
   right: TableFunction;
 
   public constructor(val = {}) {
     Object.assign(this, val);
+
+    this.name = this.left? this.left.name:this.right.name;
+    this.tableName = null;
+    this.type = DiffType.FUNC;
   }
 
 

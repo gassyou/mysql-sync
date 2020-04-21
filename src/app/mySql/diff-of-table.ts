@@ -1,13 +1,21 @@
-import { IDifference } from './difference-interface';
+import { IDifference, DiffType } from './difference-interface';
 import { Table } from './table';
 
 export class DiffOfTable implements IDifference {
 
+
+  public readonly name?: string;
+  public readonly tableName?: string;
+  public readonly type?: DiffType;
   public readonly left: Table;
   public readonly right: Table;
 
   public constructor(val = {}) {
     Object.assign(this, val);
+
+    this.name = this.left? this.left.name:this.right.name;
+    this.tableName = this.name;
+    this.type = DiffType.TABLE;
   }
 
   syncToLeftSql(): string {

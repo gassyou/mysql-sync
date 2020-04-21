@@ -1,8 +1,8 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { DiffItemViewModel, DiffType } from './diff-item-view-model';
+import { DiffItemViewModel } from './diff-item-view-model';
 import { DomainEvent } from './../../common/domain-event';
 import { CompareService } from './../../service/compare.service';
-import { IDifference } from './../../mySql/difference-interface';
+import { IDifference, DiffType } from './../../mySql/difference-interface';
 import { Table } from './../../mySql/table';
 import { TableColumn } from './../../mySql/table-column';
 import { TableKey } from './../../mySql/table-key';
@@ -28,40 +28,32 @@ export class DiffItemComponent implements OnInit {
 
     const showDiff = (e: IDifference) => {
 
-      if(!e) {
+      if(!e || this.checkIsExisting(e)) {
         return ;
       }
 
       const diffItem: DiffItemViewModel = {
         id: this.getDiffItemIds(e),
-        type: this.getDiffItemType(e),
-        title_1: e.left?e.left.name : '<不存在>',
-        title_2: e.right?e.right.name : '<不存在>',
-        sql1: e.syncToLeftSql(),
-        sql2: e.syncToRightSql(),
+        diff: e,
         isSelected: false,
         styleClass: 'mouseout',
         items: []
       };
 
-      if(!diffItem.id) {
-        return;
-      }
-
-      const ids: string[] = diffItem.id.split('-');
-      if(ids.length > 1) {
-        this.diffItems.forEach( x=> {
-          if(x.id === ids[0]) {
+      if(e.type !== DiffType.COLUMN && e.type !== DiffType.KEY) {
+        this.diffItems.push(diffItem);
+      }  else {
+        this.diffItems.some(x=>{
+          if(x.diff.name === e.tableName) {
             x.items.push(diffItem);
+            return true;
           }
         });
-      } else {
-        this.diffItems.push(diffItem);
       }
+      this.cdr.markForCheck();
     }
 
     DomainEvent.getInstance().Register({eventType:'diff-found', handle:showDiff});
-
     DomainEvent.getInstance().Register({eventType:'progress', handle:(e: number)=>{
       if(!e) {
         return ;
@@ -74,73 +66,58 @@ export class DiffItemComponent implements OnInit {
 
   onItemClick(diff: DiffItemViewModel) {
     this.selectedId = diff.id;
+    this.diffItems.forEach(x => {
+      if(x.id === diff.id) {
+        x.isSelected = !x.isSelected
+      }
+    });
     this.compare.diffItemSelected$.next(
       {
-        sql1: diff.sql1,
-        sql2: diff.sql2
+        left: diff.diff.syncToLeftSql(),
+        right: diff.diff.syncToRightSql()
       }
     );
+
+    this.cdr.detectChanges();
   }
 
   getDiffItemIds(data: IDifference): string {
 
-
-    const diffType = this.getDiffItemType(data);
-    console.log("aaa:"+diffType);
-
-    if(diffType !== DiffType.COLUMN && diffType !== DiffType.KEY) {
+    if(data.type !== DiffType.COLUMN && data.type !== DiffType.KEY) {
       return this.diffItems.length.toString();
+    }
+    const parent = this.diffItems.find(x=>{
+      return x.diff.name === data.tableName
+    });
+    return parent.id + '-' + parent.items.length.toString();
+  }
+
+
+  checkIsExisting(data: IDifference): boolean {
+
+    let some: DiffItemViewModel = null;
+    if(data.type !== DiffType.COLUMN && data.type !== DiffType.KEY) {
+      some = this.diffItems.find(x=>{
+        return (x.diff.name === data.name && x.diff.type === data.type)
+      });
     } else {
-      const parentName = this.getBelongedTableName(data);
-      let parent = this.diffItems.find(x=>{
-        const name = x.title_1 !== '<不存在>'? x.title_1 : x.title_2;
-        return name === parentName;
+
+      const parent = this.diffItems.find(x=>{
+        return x.diff.name === data.tableName
       });
 
-      if(!parent) {
-        parent = this.createParentDiffItem(parentName);
+      if(parent) {
+        some = parent.items.find(x=>{
+          return (x.diff.name === data.name && x.diff.type === data.type)
+        });
       }
-      return parent.id.toString() + '-' + parent.items.length.toString();
+    }
+
+    if(some) {
+      return true;
+    } else {
+      return false;
     }
   }
-
-  getDiffItemType(data: IDifference): DiffType {
-
-    const comparable = data.left ? data.left: data.right;
-    console.log("aaa:"+comparable);
-    if(comparable instanceof Table) {
-      return DiffType.TABLE;
-    } else if(comparable instanceof TableColumn) {
-      return DiffType.COLUMN;
-    } else if(comparable instanceof TableKey) {
-      return DiffType.KEY;
-    } else if(comparable instanceof TableView) {
-      return DiffType.VIEW;
-    } else  {
-      return DiffType.FUNC;
-    }
-  }
-
-  getBelongedTableName(data:IDifference): string {
-    const comparable = data.left ? data.left: data.right;
-    return comparable.tableName;
-  }
-
-  createParentDiffItem(tableName: string): DiffItemViewModel {
-    return {
-      id: this.diffItems.length.toString(),
-      type: DiffType.TABLE,
-      title_1: tableName,
-      title_2: tableName,
-      sql1: '',
-      sql2: '',
-      isSelected: false,
-      styleClass: 'mouseout',
-      items: []
-    };
-  }
-
-
-
 
 }

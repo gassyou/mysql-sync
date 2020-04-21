@@ -3,6 +3,8 @@ import { TableKey } from './table-key';
 import { IComparable } from './comparable-interface';
 import { DomainEvent } from '../common/domain-event';
 import { DiffOfTable } from './diff-of-table';
+import { DiffOfTableColumn } from './diff-of-table-column';
+import { DiffOfTableKey } from './diff-of-table-key';
 
 export class Table implements IComparable {
 
@@ -32,6 +34,8 @@ export class Table implements IComparable {
         left => {
           const right = other.columns.find(x => x.name === left.name);
           if (left.findDiff(right)) {
+            DomainEvent.getInstance().raise('diff-found', new DiffOfTable({left: this, right: other}));
+            DomainEvent.getInstance().raise('diff-found', new DiffOfTableColumn({left, right}));
             hasDiff = true;
           }
         }
@@ -41,7 +45,8 @@ export class Table implements IComparable {
         right => {
           const left = this.columns.find(x => x.name === right.name);
           if (!left) {
-            DomainEvent.getInstance().raise('diff-found', new DiffOfTable({left: null, right}));
+            DomainEvent.getInstance().raise('diff-found', new DiffOfTable({left: this, right: other}));
+            DomainEvent.getInstance().raise('diff-found', new DiffOfTableColumn({left: null, right}));
             hasDiff = true;
           }
         }
@@ -50,7 +55,10 @@ export class Table implements IComparable {
       this.keys.forEach(
         left => {
           const right = other.keys.find(x => x.name === left.name);
+
           if (left.findDiff(right)) {
+            DomainEvent.getInstance().raise('diff-found', new DiffOfTable({left: this, right: other}));
+            DomainEvent.getInstance().raise('diff-found', new DiffOfTableKey({left, right}));
             hasDiff = true;
           }
         }
@@ -58,9 +66,10 @@ export class Table implements IComparable {
 
       other.keys.forEach(
         right => {
-          const left = other.keys.find(x => x.name === right.name);
+          const left = this.keys.find(x => x.name === right.name);
           if (!left) {
-            DomainEvent.getInstance().raise('diff-found', new DiffOfTable({left: null, right}));
+            DomainEvent.getInstance().raise('diff-found', new DiffOfTable({left: this, right: other}));
+            DomainEvent.getInstance().raise('diff-found', new DiffOfTableKey({left: null, right}));
             hasDiff = true;
           }
         }

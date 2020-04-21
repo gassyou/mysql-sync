@@ -1,4 +1,4 @@
-import { IDifference } from './difference-interface';
+import { IDifference, DiffType } from './difference-interface';
 import { TableKey } from './table-key';
 import { TableKeyType } from './table-key-type';
 import { String } from 'typescript-string-operations';
@@ -6,6 +6,9 @@ import { String } from 'typescript-string-operations';
 
 export class DiffOfTableKey implements IDifference {
 
+  public readonly name?: string;
+  public readonly tableName?: string;
+  public readonly type?: DiffType;
   public readonly left: TableKey;
   public readonly right: TableKey;
 
@@ -17,6 +20,10 @@ export class DiffOfTableKey implements IDifference {
 
   public constructor(val = {}) {
     Object.assign(this, val);
+
+    this.name = this.left? this.left.name:this.right.name;
+    this.tableName = this.left? this.left.tableName:this.right.tableName;
+    this.type = DiffType.KEY;
   }
 
   syncToLeftSql(): string {

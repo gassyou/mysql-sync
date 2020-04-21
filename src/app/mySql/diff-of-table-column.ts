@@ -1,12 +1,19 @@
-import { IDifference } from './difference-interface';
+import { IDifference, DiffType } from './difference-interface';
 import { TableColumn } from './table-column';
 
 export class DiffOfTableColumn implements IDifference {
+
+  public readonly name?: string;
+  public readonly tableName?: string;
+  public readonly type?: DiffType;
   left: TableColumn;
   right: TableColumn;
 
   public constructor(val = {}) {
     Object.assign(this, val);
+    this.name = this.left? this.left.name:this.right.name;
+    this.tableName = this.left? this.left.tableName:this.right.tableName;
+    this.type = DiffType.COLUMN;
   }
 
 
