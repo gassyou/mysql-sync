@@ -1,5 +1,6 @@
 
  <ng-container *ngIf="percent === 100">
+  <div style="text-align: center; color:#4e4e4e;font-weight:bold;"><a (click)="redo()">[重新比较]</a></div>
   <div *ngFor="let header of diffItems" >
       <div nz-row class="header"
         [ngClass]="[selectedId===header.id?'active':'',header.styleClass]"
