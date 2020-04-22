@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CompareService } from '../service/compare.service';
 import { NzMessageService } from 'ng-zorro-antd';
 import { Router } from '@angular/router';
@@ -6,7 +6,8 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-db-connection',
   templateUrl: './db-connection.component.html',
-  styleUrls: ['./db-connection.component.less']
+  styleUrls: ['./db-connection.component.less'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DbConnectionComponent implements OnInit {
 

@@ -1,6 +1,4 @@
 import { IComparable } from './comparable-interface';
-import { DomainEvent } from '../common/domain-event';
-import { DiffOfTableColumn } from './diff-of-table-column';
 
 export class TableColumn implements IComparable {
 
@@ -18,12 +16,12 @@ export class TableColumn implements IComparable {
   }
 
   public toDDLString(): string {
-    return '`' + this.name + '` '
-      + this.dataType + ' '
-      + this.nullable ? '' : 'NOT' + ' '
-      + this.autoIncrement ? 'AUTO_INCREMENT' : '' + ' '
-      + this.defaultValue ? 'DEFAULT ' + '\'' + this.defaultValue + '\'' : '' + ' '
-      + this.comment ? 'COMMENT' +  '\'' + this.comment + '\'' : '';
+    return `\`${this.name}\`
+            ${this.dataType}
+            ${this.autoIncrement ? 'AUTO_INCREMENT' : ''}
+            ${this.nullable ? 'NULL' : 'NOT NULL'}
+            ${this.defaultValue ? 'DEFAULT '+this.defaultValue : '' }
+            ${this.comment ? 'COMMENT \'' + this.comment + '\'' : ''}`;
   }
 
 

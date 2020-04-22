@@ -3,10 +3,7 @@ import { DiffItemViewModel } from './diff-item-view-model';
 import { DomainEvent } from './../../common/domain-event';
 import { CompareService } from './../../service/compare.service';
 import { IDifference, DiffType } from './../../mySql/difference-interface';
-import { Table } from './../../mySql/table';
-import { TableColumn } from './../../mySql/table-column';
-import { TableKey } from './../../mySql/table-key';
-import { TableView } from './../../mySql/table-view';
+
 
 @Component({
   selector: 'app-diff-item',
@@ -53,14 +50,19 @@ export class DiffItemComponent implements OnInit {
       this.cdr.markForCheck();
     }
 
-    DomainEvent.getInstance().Register({eventType:'diff-found', handle:showDiff});
-    DomainEvent.getInstance().Register({eventType:'progress', handle:(e: number)=>{
+    const showProgress = (e: number) => {
       if(!e) {
         return ;
       }
       this.percent = Number.parseFloat(e.toFixed(2));
-      this.cdr.detectChanges();
-    }})
+
+      if (!this.cdr['destroyed']) {
+        this.cdr.detectChanges();
+      }
+    }
+
+    DomainEvent.getInstance().Register({eventType: 'diff-found', handle: showDiff});
+    DomainEvent.getInstance().Register({eventType: 'progress', handle: showProgress});
     this.compare.doComparetion();
   }
 
@@ -71,13 +73,15 @@ export class DiffItemComponent implements OnInit {
         x.isSelected = !x.isSelected
       }
     });
+    console.log(diff);
+    console.log(diff.diff.syncToLeftSql());
+    console.log(diff.diff.syncToRightSql());
     this.compare.diffItemSelected$.next(
       {
         left: diff.diff.syncToLeftSql(),
         right: diff.diff.syncToRightSql()
       }
     );
-
     this.cdr.detectChanges();
   }
 
@@ -91,7 +95,6 @@ export class DiffItemComponent implements OnInit {
     });
     return parent.id + '-' + parent.items.length.toString();
   }
-
 
   checkIsExisting(data: IDifference): boolean {
 

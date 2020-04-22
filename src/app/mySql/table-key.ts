@@ -1,7 +1,5 @@
 import { TableKeyType } from './table-key-type';
 import { IComparable } from './comparable-interface';
-import { DomainEvent } from '../common/domain-event';
-import { DiffOfTableKey } from './diff-of-table-key';
 
 export class TableKey implements IComparable {
 
@@ -19,20 +17,20 @@ export class TableKey implements IComparable {
   public toDDLString(): string {
 
     if (this.keyType === TableKeyType.PRIMARY_KEY) {
-      return TableKeyType.PRIMARY_KEY  + ' ( ' + this.keyColumns.join(',') + ' )';
+      return `${TableKeyType.PRIMARY_KEY } (  ${this.keyColumns.join(',')} )`;
     }
 
     if (this.keyType === TableKeyType.UNIQUE_KEY) {
-      return TableKeyType.UNIQUE_KEY + ' ' + this.name + ' ( ' + this.keyColumns.join(',') + ' )';
+      return `${TableKeyType.UNIQUE_KEY} ${this.name} ( ${this.keyColumns.join(',')} )`;
     }
 
     if (this.keyType === TableKeyType.INDEX_KEY) {
-      return TableKeyType.INDEX_KEY + ' ' +  this.name + ' ( ' + this.keyColumns.join(',') + ' )';
+      return `${TableKeyType.INDEX_KEY} ${this.name} ( ${this.keyColumns.join(',')} )`;
     }
 
     if (this.keyType === TableKeyType.FOREIGN_KEY) {
-      return 'CONSTRAINT ' + this.name  + ' ' + TableKeyType.FOREIGN_KEY + ' ( ' + this.keyColumns.join(',') + ' )'
-              + 'REFERENCES ' + this.referenceTable + ' ( ' + this.referenceColumns + ' )';
+      return `CONSTRAINT ${this.name} ${TableKeyType.FOREIGN_KEY} ( ${this.keyColumns.join(',')} )
+              REFERENCES ${this.referenceTable} ( ${this.referenceColumns} )`;
     }
 
     return '';

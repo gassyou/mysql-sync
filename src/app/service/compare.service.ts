@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Subject, Observable, from, of, zip} from 'rxjs';
-import { map, catchError, mergeMap, toArray,mergeAll, scan} from 'rxjs/operators';
+import { Subject, Observable, from, of, zip, Subscription} from 'rxjs';
+import { map, catchError, mergeMap, toArray,mergeAll} from 'rxjs/operators';
 import { Connection, ConnectionConfig } from 'mysql';
 import { DbService } from './db.service';
 import { Table } from '../mySql/table';
@@ -13,6 +13,7 @@ import { DomainEvent } from '../common/domain-event';
 import { TableView } from '../mySql/table-view';
 import { DiffOfTableFunc } from '../mySql/diff-of-table-func';
 import { DiffOfTableView } from '../mySql/diff-of-table-view';
+import { DiffOfTable } from '../mySql/diff-of-table';
 
 @Injectable({
   providedIn: 'root'
@@ -29,6 +30,7 @@ export class CompareService {
   public rightConnCofing: ConnectionConfig = null;
 
   private counter = 0;
+  private subscription: Subscription = null;
 
   constructor(
     public db: DbService
@@ -79,9 +81,7 @@ export class CompareService {
     const leftViews$ = this.viewFactory(this.leftConnect, this.leftConnCofing.database);
     const rightViews$ = this.viewFactory(this.rightConnect, this.rightConnCofing.database);
 
-
-
-    zip(leftTables$,rightTables$,leftFunctions$,rightFunction$ ,leftViews$,rightViews$).subscribe(
+    this.subscription = zip(leftTables$,rightTables$,leftFunctions$,rightFunction$ ,leftViews$,rightViews$).subscribe(
       ([leftTables,rightTables, leftFunctions, rightFunctions, leftViews, rightViews]) => {
 
         DomainEvent.getInstance().raise('progress', 95);
@@ -94,7 +94,9 @@ export class CompareService {
         rightTables.forEach(
           right => {
             const left = leftTables.find(x=>x.name === right.name);
-            right.findDiff(left);
+            if(!left) {
+              DomainEvent.getInstance().raise('diff-found', new DiffOfTable({left: null, right: right}));
+            }
           }
         );
 
@@ -131,13 +133,10 @@ export class CompareService {
         leftViews = [];
         rightViews = [];
         console.log(new Date());
-    }
-    );
-
+    });
   }
 
   allTables(conn: Connection, schema: string): Observable<Table[]> {
-
     const allTables$ = this.db.query(conn,this.db.ALL_TABLES_SQL).pipe(
       map(data =>{
         const tables = [];
@@ -168,7 +167,6 @@ export class CompareService {
         } else {
           this.counter++
         }
-
         DomainEvent.getInstance().raise('progress',5 + this.counter);
 
         return new Table({
@@ -382,10 +380,9 @@ export class CompareService {
     );
   }
 
-
-
-
   exit() {
+
+    this.subscription.unsubscribe();
     if(this.leftConnect) {
       this.leftConnect.end();
     }

@@ -4,10 +4,10 @@ Mysql 数据库同步工具。使用electron 和 angular 8 实现。
 
 ## Development server
 
-Run `npm run start:electron` 
+Run `npm run start` 
 
 
 ## Build
 
-Run `npm run build:electron` 
+Run `npm run electron:windows` 
 

@@ -1,11 +1,12 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { CompareService } from '../service/compare.service';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-compare',
   templateUrl: './compare.component.html',
-  styleUrls: ['./compare.component.less']
+  styleUrls: ['./compare.component.less'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CompareComponent implements OnInit {
 
@@ -15,16 +16,14 @@ export class CompareComponent implements OnInit {
   host2 = '';
   name2 = '';
 
-  isSpinning = false;
-
-  sqlDiff:any = {};
+  leftSql = '';
+  rightSql = '';
 
   constructor(
     public compare: CompareService,
     private router: Router,
     private cdr: ChangeDetectorRef
   ) { }
-
 
   ngOnInit() {
     this.host1 = this.compare.leftConnCofing.host;
@@ -35,13 +34,13 @@ export class CompareComponent implements OnInit {
 
     this.compare.diffItemSelected$.asObservable().subscribe(
       data => {
-        this.sqlDiff = data;
-        this.cdr.markForCheck();
+
+        this.leftSql = data.left;
+        this.rightSql = data.right;
+        this.cdr.detectChanges();
       }
     );
-
   }
-
 
   exit() {
     this.compare.exit();

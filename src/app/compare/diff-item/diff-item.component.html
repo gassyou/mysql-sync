@@ -17,7 +17,9 @@
               <i *ngIf="header.diff.type==='view'" nz-icon>
                 <svg t="1585025948651" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="8824" width="16" height="16"><path d="M512 179.2c211.712 0 390.592 140.8 448 333.824a467.584 467.584 0 0 1-896 0A467.584 467.584 0 0 1 512 179.2z m0 578.048c159.104 0 298.88-99.2 353.536-244.224a378.048 378.048 0 0 0-707.072 0A378.048 378.048 0 0 0 512 757.248z" fill="#6D7383" p-id="8825"></path><path d="M512 672a160 160 0 1 0 0-320 160 160 0 0 0 0 320z m0-64a96 96 0 1 1 0-192 96 96 0 0 1 0 192z" fill="#6D7383" p-id="8826"></path></svg>
               </i>
-              <span style="margin-left: 3px;"> {{header.diff.left? header.diff.left.name:'<不存在>'}} </span>
+              <span style="margin-left: 3px;">
+                  <span *ngIf="header.diff.left else noItem">{{header.diff.left.name}}</span>
+                </span>
             </span>
           </div>
         <div nz-col nzSpan="12" class="header_right">
@@ -28,7 +30,9 @@
           <i *ngIf="header.diff.type==='view'" nz-icon>
             <svg t="1585025948651" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="8824" width="16" height="16"><path d="M512 179.2c211.712 0 390.592 140.8 448 333.824a467.584 467.584 0 0 1-896 0A467.584 467.584 0 0 1 512 179.2z m0 578.048c159.104 0 298.88-99.2 353.536-244.224a378.048 378.048 0 0 0-707.072 0A378.048 378.048 0 0 0 512 757.248z" fill="#6D7383" p-id="8825"></path><path d="M512 672a160 160 0 1 0 0-320 160 160 0 0 0 0 320z m0-64a96 96 0 1 1 0-192 96 96 0 0 1 0 192z" fill="#6D7383" p-id="8826"></path></svg>
           </i>
-          <span style="margin-left: 3px;"> {{header.diff.right? header.diff.right.name:'<不存在>'}} </span>
+          <span style="margin-left: 3px;">
+            <span *ngIf="header.diff.right else noItem">{{header.diff.right.name}}</span>
+          </span>
         </div>
       </div>
 
@@ -45,7 +49,9 @@
               <i *ngIf="detail.diff.type==='key'" nz-icon>
                 <svg t="1585026421040" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="11173" width="16" height="16"><path d="M490.208 193.088h33.568v134.272H490.208V193.088z" fill="" p-id="11174"></path><path d="M741.952 293.792A234.976 234.976 0 1 0 272 293.792a234.88 234.88 0 0 0 150.528 219.072v452.288h167.84v-116.96l50.88-50.88-50.88-50.88v-66.08l84.448-84.448-83.136-83.136c87.84-34.016 150.272-119.136 150.272-218.976z m-162.4 187.68l-22.752 8.8v35.104l70.496 70.56-70.528 70.528v93.888l36.96 36.992-36.96 36.992v97.312H456.064V489.888l-21.504-8.288a200 200 0 0 1-129.024-187.744 201.6 201.6 0 0 1 201.408-201.408 201.632 201.632 0 0 1 201.408 201.408 200.096 200.096 0 0 1-128.832 187.68z" fill="" p-id="11175"></path></svg>
               </i>
-              <span style="margin-left: 3px;"> {{detail.diff.left? detail.diff.left.name:'<不存在>'}} </span>
+              <span style="margin-left: 3px;">
+                <span *ngIf="detail.diff.left else noItem">{{detail.diff.left.name}}</span>
+              </span>
             </div>
             <div nz-col nzSpan="12" class="detail_right">
               <i *ngIf="detail.diff.type==='column'" nz-icon>
@@ -54,7 +60,9 @@
               <i *ngIf="detail.diff.type==='key'" nz-icon>
                 <svg t="1585026421040" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="11173" width="16" height="16"><path d="M490.208 193.088h33.568v134.272H490.208V193.088z" fill="" p-id="11174"></path><path d="M741.952 293.792A234.976 234.976 0 1 0 272 293.792a234.88 234.88 0 0 0 150.528 219.072v452.288h167.84v-116.96l50.88-50.88-50.88-50.88v-66.08l84.448-84.448-83.136-83.136c87.84-34.016 150.272-119.136 150.272-218.976z m-162.4 187.68l-22.752 8.8v35.104l70.496 70.56-70.528 70.528v93.888l36.96 36.992-36.96 36.992v97.312H456.064V489.888l-21.504-8.288a200 200 0 0 1-129.024-187.744 201.6 201.6 0 0 1 201.408-201.408 201.632 201.632 0 0 1 201.408 201.408 200.096 200.096 0 0 1-128.832 187.68z" fill="" p-id="11175"></path></svg>
               </i>
-              <span style="margin-left: 3px;"> {{detail.diff.right? detail.diff.right.name:'<不存在>'}} </span>
+              <span style="margin-left: 3px;">
+                <span *ngIf="detail.diff.right else noItem">{{detail.diff.right.name}}</span>
+              </span>
             </div>
         </div>
       </div>
@@ -70,6 +78,8 @@
     <div *ngIf="diffItems.length === 0" style="text-align:center; padding-top:24px;" >
       <nz-empty nzNotFoundContent="没有发现差异！"></nz-empty>
     </div>
+
+    <ng-template #noItem><i style="color:#ababab">&lt;不存在&gt;</i></ng-template>
 </ng-container>
 
 <ng-container *ngIf="percent !== 100">
