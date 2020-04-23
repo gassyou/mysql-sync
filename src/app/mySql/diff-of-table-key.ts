@@ -12,11 +12,11 @@ export class DiffOfTableKey implements IDifference {
   public readonly left: TableKey;
   public readonly right: TableKey;
 
-  private DROP_PRIMARY_KEY = `ALTER TABLE {0} DROP ${TableKeyType.PRIMARY_KEY}`;
-  private DROP_FOREIGN_KEY = `ALTER TABLE {0} DROP ${TableKeyType.FOREIGN_KEY} {1}`;
-  private DROP_KEY = `ALTER TABLE {0} DROP INDEX {1}`;
+  private DROP_PRIMARY_KEY = `ALTER TABLE {0} DROP ${TableKeyType.PRIMARY_KEY};<br/>`;
+  private DROP_FOREIGN_KEY = `ALTER TABLE {0} DROP ${TableKeyType.FOREIGN_KEY} {1};<br/>`;
+  private DROP_KEY = `ALTER TABLE {0} DROP INDEX {1};<br/>`;
 
-  private ADD_KEY = `ALTER TABLE {0} ADD {1}`;
+  private ADD_KEY = `ALTER TABLE {0} ADD {1};<br/>`;
 
   public constructor(val = {}) {
     Object.assign(this, val);
@@ -31,11 +31,11 @@ export class DiffOfTableKey implements IDifference {
     let returnValue = '';
     if (this.left) {
       if (this.left.keyType === TableKeyType.PRIMARY_KEY) {
-        returnValue = String.Format(this.DROP_PRIMARY_KEY, this.left.tableName) + '<br/>';
+        returnValue = String.Format(this.DROP_PRIMARY_KEY, this.left.tableName);
       } else if (this.left.keyType === TableKeyType.FOREIGN_KEY) {
-        returnValue = String.Format(this.DROP_FOREIGN_KEY, this.left.tableName, this.left.name) + '<br/>';
+        returnValue = String.Format(this.DROP_FOREIGN_KEY, this.left.tableName, this.left.name);
       } else {
-        returnValue = String.Format(this.DROP_KEY, this.left.tableName, this.left.name) + '<br/>';
+        returnValue = String.Format(this.DROP_KEY, this.left.tableName, this.left.name);
       }
     }
 
@@ -52,11 +52,11 @@ export class DiffOfTableKey implements IDifference {
     let returnValue = '';
     if (this.right ) {
       if (this.right.keyType === TableKeyType.PRIMARY_KEY) {
-        returnValue = String.Format(this.DROP_PRIMARY_KEY, this.right.tableName) + '<br/>';
+        returnValue = String.Format(this.DROP_PRIMARY_KEY, this.right.tableName);
       } else if (this.right.keyType === TableKeyType.FOREIGN_KEY) {
-        returnValue = String.Format(this.DROP_FOREIGN_KEY, this.right.tableName, this.right.name) + '<br/>';
+        returnValue = String.Format(this.DROP_FOREIGN_KEY, this.right.tableName, this.right.name);
       } else {
-        returnValue = String.Format(this.DROP_KEY, this.right.tableName, this.right.name) + '<br/>';
+        returnValue = String.Format(this.DROP_KEY, this.right.tableName, this.right.name);
       }
     }
 

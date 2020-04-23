@@ -22,7 +22,7 @@ export class DiffOfTableFunc implements IDifference {
   syncToLeftSql(): string {
     let returnValue = '';
     if (this.left) {
-      returnValue = `drop ${this.left.funcType} ${this.left.name}<br/>`;
+      returnValue = `drop ${this.left.funcType} ${this.left.name};<br/>`;
     }
 
     if (this.right) {
@@ -35,7 +35,7 @@ export class DiffOfTableFunc implements IDifference {
   syncToRightSql(): string {
     let returnValue = '';
     if (this.right) {
-      returnValue = `drop ${this.right.funcType} ${this.right.name}<br/>`;
+      returnValue = `drop ${this.right.funcType} ${this.right.name};<br/>`;
     }
 
     if (this.left) {

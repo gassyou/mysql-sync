@@ -22,7 +22,7 @@ export class DiffOfTable implements IDifference {
 
     let returnValue = '';
     if (this.left) {
-      returnValue = `drop table ${this.left.name}<br/>`;
+      returnValue = `drop table ${this.left.name};<br/>`;
     }
 
     if (this.right) {
@@ -37,7 +37,7 @@ export class DiffOfTable implements IDifference {
 
     let returnValue = '';
     if (this.right) {
-      returnValue = `drop table ${this.right.name}<br/>`;
+      returnValue = `drop table ${this.right.name};<br/>`;
     }
 
     if (this.left) {
