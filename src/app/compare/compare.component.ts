@@ -52,6 +52,16 @@ export class CompareComponent implements OnInit {
   copy(val:string) {
 
     if(val) {
+
+      val = val.replace(/<br\/>/g, "<BR/>");
+
+      const varArray = val.split('<BR/>');
+      for ( let i = 0; i < varArray.length; i++ ) {
+        varArray[i] = varArray[i] + "\n";
+      }
+
+      val = varArray.join('');
+
       let selBox = document.createElement('textarea');
       selBox.style.position = 'fixed';
       selBox.style.left = '0';
