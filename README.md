@@ -1,6 +1,6 @@
 # MysqlSync
 
-Mysql 数据库机构比较。使用electron 和 angular 8 实现。通过如下内容进行比较两个差异
+Mysql 数据库结构比较。使用electron 和 angular 8 实现。通过如下内容进行比较两个差异
 * 表
   - 字段
   - 组件
