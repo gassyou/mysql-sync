@@ -5,7 +5,10 @@
   <div nz-col nzSpan="5" class="side">
     <div class="header side_header">更新到数据库1</div>
     <div  class="side_content">
-      <code class="side_content"  [innerHTML]="leftSql"></code>
+      <code [innerHTML]="leftSql"></code>
+    </div>
+    <div class="copy_bar">
+      <a  (click)="copy(leftSql)">[拷贝SQL]</a>
     </div>
   </div>
   <div nz-col nzSpan="14">
@@ -27,6 +30,9 @@
     <div class="header side_header">更新到数据库2</div>
     <div  class="side_content">
       <code [innerHTML]="rightSql"></code>
+    </div>
+    <div class="copy_bar">
+      <a  (click)="copy(rightSql)">[拷贝SQL]</a>
     </div>
   </div>
 </div>

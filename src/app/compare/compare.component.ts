@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { CompareService } from '../service/compare.service';
 import { Router } from '@angular/router';
+import { NzMessageService } from 'ng-zorro-antd/message';
 
 @Component({
   selector: 'app-compare',
@@ -22,7 +23,8 @@ export class CompareComponent implements OnInit {
   constructor(
     public compare: CompareService,
     private router: Router,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private message: NzMessageService
   ) { }
 
   ngOnInit() {
@@ -45,6 +47,26 @@ export class CompareComponent implements OnInit {
   exit() {
     this.compare.exit();
     this.router.navigate(['connection']);
+  }
+
+  copy(val:string) {
+
+    if(val) {
+      let selBox = document.createElement('textarea');
+      selBox.style.position = 'fixed';
+      selBox.style.left = '0';
+      selBox.style.top = '0';
+      selBox.style.opacity = '0';
+      selBox.value = val;
+      document.body.appendChild(selBox);
+      selBox.focus();
+      selBox.select();
+      document.execCommand('copy');
+      document.body.removeChild(selBox);
+      this.message.info("拷贝成功！");
+    } else {
+      this.message.warning("没有内容被拷贝！");
+    }
   }
 
 }

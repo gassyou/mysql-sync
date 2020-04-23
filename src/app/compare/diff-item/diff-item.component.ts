@@ -77,15 +77,14 @@ export class DiffItemComponent implements OnInit {
         x.isSelected = !x.isSelected
       }
     });
-    console.log(diff);
-    console.log(diff.diff.syncToLeftSql());
-    console.log(diff.diff.syncToRightSql());
+
     this.compare.diffItemSelected$.next(
       {
         left: diff.diff.syncToLeftSql(),
         right: diff.diff.syncToRightSql()
       }
     );
+
     this.cdr.detectChanges();
   }
 

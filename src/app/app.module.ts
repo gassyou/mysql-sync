@@ -15,7 +15,7 @@ import { ConnectionFormComponent } from './db-connection/connection-form/connect
 import { DiffItemComponent } from './compare/diff-item/diff-item.component';
 
 import { IconDefinition } from '@ant-design/icons-angular';
-import { NzIconModule, NZ_ICON_DEFAULT_TWOTONE_COLOR, NZ_ICONS } from 'ng-zorro-antd/icon';
+import { NZ_ICON_DEFAULT_TWOTONE_COLOR, NZ_ICONS } from 'ng-zorro-antd/icon';
 import { TableOutline } from '@ant-design/icons-angular/icons';
 
 const icons: IconDefinition[] = [ TableOutline ];
@@ -37,7 +37,7 @@ registerLocaleData(zh);
     FormsModule,
     HttpClientModule,
     BrowserAnimationsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
   ],
   providers: [
     { provide: NZ_I18N, useValue: zh_CN },
