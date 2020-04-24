@@ -25,7 +25,7 @@ export class DiffOfTableView implements IDifference {
     }
 
     if (this.right) {
-      returnValue = returnValue + this.right.toDDLString();
+      returnValue = returnValue + `CREATE VIEW ${this.right.name} AS ` + this.right.toDDLString();
     }
 
     return returnValue.toUpperCase();
@@ -38,7 +38,7 @@ export class DiffOfTableView implements IDifference {
     }
 
     if (this.left) {
-      returnValue = returnValue + this.left.toDDLString();
+      returnValue = returnValue + `CREATE VIEW ${this.left.name} AS ` + this.left.toDDLString();
     }
 
     return returnValue.toUpperCase();
