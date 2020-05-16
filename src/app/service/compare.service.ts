@@ -32,6 +32,10 @@ export class CompareService {
   private counter = 0;
   private subscription: Subscription = null;
 
+
+  public keyCompareNeed = false;
+  public functionCompareNeed = false;
+
   constructor(
     public db: DbService
   ) { }
@@ -157,7 +161,7 @@ export class CompareService {
   tableFactory(conn: Connection, schema: string, tableName: string): Observable<Table> {
 
     const columnsObservable = this.columnFactory(conn, tableName);
-    const keysObservable = this.allKeyFactory(conn, schema,tableName);
+    const keysObservable = this.keyCompareNeed ? this.allKeyFactory(conn, schema,tableName) : of([]);
     const ddlObservable = this.getTableDDL(conn,tableName);
     return zip(columnsObservable,keysObservable,ddlObservable).pipe(
       map(([columns,keys,ddl])=>{
@@ -343,6 +347,12 @@ export class CompareService {
   }
 
   functionFactory(conn: Connection,schema: string): Observable<TableFunction[]> {
+
+    if(!this.functionCompareNeed) {
+      return of([]);
+    }
+
+
     const query = String.Format(this.db.ALL_FUN_SQL,schema);
 
     return this.db.query(conn,query).pipe(

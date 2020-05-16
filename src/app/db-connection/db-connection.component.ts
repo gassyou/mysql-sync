@@ -11,6 +11,10 @@ import { Router } from '@angular/router';
 })
 export class DbConnectionComponent implements OnInit {
 
+
+  keyCompareNeed = false;
+  functionCompareNeed = false;
+
   constructor(
     public compare: CompareService,
     private message: NzMessageService,
@@ -27,6 +31,8 @@ export class DbConnectionComponent implements OnInit {
     if(!this.compare.isConnected()) {
       this.message.create('error','请先连接数据库！');
     } else {
+      this.compare.keyCompareNeed = this.keyCompareNeed;
+      this.compare.functionCompareNeed = this.functionCompareNeed;
       this.router.navigate(['compare']);
     }
   }
