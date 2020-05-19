@@ -28,7 +28,7 @@ export class DiffOfTableView implements IDifference {
       returnValue = returnValue + `CREATE VIEW ${this.right.name} AS ` + this.right.toDDLString();
     }
 
-    return returnValue.toUpperCase();
+    return returnValue;
   }
 
   syncToRightSql(): string {
@@ -41,6 +41,6 @@ export class DiffOfTableView implements IDifference {
       returnValue = returnValue + `CREATE VIEW ${this.left.name} AS ` + this.left.toDDLString();
     }
 
-    return returnValue.toUpperCase();
+    return returnValue;
   }
 }

@@ -32,7 +32,7 @@ export class DiffOfTableColumn implements IDifference {
       }
     }
 
-    return returnValue.toUpperCase();
+    return returnValue;
   }
   syncToRightSql(): string {
     let returnValue = '';
@@ -50,7 +50,7 @@ export class DiffOfTableColumn implements IDifference {
       }
     }
 
-    return returnValue.toUpperCase();
+    return returnValue;
 
   }
 

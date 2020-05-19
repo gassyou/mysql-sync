@@ -43,7 +43,7 @@ export class DiffOfTableKey implements IDifference {
       returnValue = returnValue + String.Format(this.ADD_KEY, this.right.tableName, this.right.toDDLString());
     }
 
-    return returnValue.toUpperCase();
+    return returnValue;
 
   }
 
@@ -64,7 +64,7 @@ export class DiffOfTableKey implements IDifference {
       returnValue = returnValue + String.Format(this.ADD_KEY, this.left.tableName, this.left.toDDLString());
     }
 
-    return returnValue.toUpperCase();
+    return returnValue;
 
   }
 

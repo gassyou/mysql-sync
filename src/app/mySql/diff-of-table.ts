@@ -29,7 +29,7 @@ export class DiffOfTable implements IDifference {
       returnValue = returnValue + this.right.toDDLString();
     }
 
-    return returnValue.toUpperCase();
+    return returnValue;
   }
 
 
@@ -44,7 +44,7 @@ export class DiffOfTable implements IDifference {
       returnValue = returnValue + this.left.toDDLString();
     }
 
-    return returnValue.toUpperCase();
+    return returnValue;
 
   }
 

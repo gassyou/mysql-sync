@@ -29,7 +29,7 @@ export class DiffOfTableFunc implements IDifference {
       returnValue = returnValue + this.right.toDDLString();
     }
 
-    return returnValue.toUpperCase();
+    return returnValue;
   }
 
   syncToRightSql(): string {
@@ -42,6 +42,6 @@ export class DiffOfTableFunc implements IDifference {
       returnValue = returnValue + this.left.toDDLString();
     }
 
-    return returnValue.toUpperCase();
+    return returnValue;
   }
 }
