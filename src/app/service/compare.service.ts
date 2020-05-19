@@ -247,8 +247,8 @@ export class CompareService {
             name: x['INDEX_NAME'],
             tableName: tableName,
             columnName: x['COLUMN_NAME'],
-            referenceTable: x['REFERENCED_TABLE_NAME'] ? x['REFERENCED_TABLE_NAME'] : '',
-            referenceColumns: x['REFERENCED_COLUMN_NAME'] ? x['REFERENCED_COLUMN_NAME'] : '',
+            referenceTable: x['REFERENCED_TABLE_NAME'] ? x['REFERENCED_TABLE_NAME']: '',
+            referenceColumns: x['REFERENCED_COLUMN_NAME'] ? x['REFERENCED_COLUMN_NAME']: '',
             keyType: KeyType[x['CONSTRAINT_TYPE']]
           }));
         }
@@ -382,12 +382,26 @@ export class CompareService {
         data.results.map( x=> {
           views.push(new TableView({
             name: x['TABLE_NAME'],
-            viewBody: x['VIEW_DEFINITION']
+            viewBody: x['VIEW_DEFINITION'],
           }))
         });
         return views;
       })
     );
+  }
+
+
+  doUpdate(db:'left'|'right', sql: string):Observable<any> {
+
+    let conn: Connection = null;
+    if(db === 'left') {
+      conn = this.leftConnect;
+    } else {
+      conn = this.rightConnect;
+    }
+
+    return this.db.query(conn,sql);
+
   }
 
   exit() {

@@ -4,11 +4,12 @@
 <div nz-row>
   <div nz-col nzSpan="5" class="side">
     <div class="header side_header">更新到数据库1</div>
-    <div  class="side_content">
+    <div class="side_content">
       <code [innerHTML]="leftSql"></code>
     </div>
     <div class="copy_bar">
-      <a  (click)="copy(leftSql)">[拷贝SQL]</a>
+      <a (click)="copy(leftSql)">[拷贝SQL]</a>
+      <a style="margin-left: 8px" (click)="update('left',rightSql)">[更新]</a>
     </div>
   </div>
   <div nz-col nzSpan="14">
@@ -32,7 +33,8 @@
       <code [innerHTML]="rightSql"></code>
     </div>
     <div class="copy_bar">
-      <a  (click)="copy(rightSql)">[拷贝SQL]</a>
+      <a (click)="copy(rightSql)">[拷贝SQL]</a>
+      <a style="margin-left: 8px" (click)="update('right', rightSql)">[更新]</a>
     </div>
   </div>
 </div>

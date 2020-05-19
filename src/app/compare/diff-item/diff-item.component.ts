@@ -67,6 +67,7 @@ export class DiffItemComponent implements OnInit {
   }
 
   redo() {
+    this.diffItems = [];
     this.compare.doComparetion();
   }
 

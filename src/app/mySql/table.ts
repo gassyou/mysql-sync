@@ -32,7 +32,7 @@ export class Table implements IComparable {
 
       this.columns.forEach(
         left => {
-          const right = other.columns.find(x => x.name === left.name);
+          const right = other.columns.find(x => x.name.toUpperCase() === left.name.toUpperCase());
           if (left.findDiff(right)) {
             DomainEvent.getInstance().raise('diff-found', new DiffOfTable({left: this, right: other}));
             DomainEvent.getInstance().raise('diff-found', new DiffOfTableColumn({left, right}));
@@ -43,7 +43,7 @@ export class Table implements IComparable {
 
       other.columns.forEach(
         right => {
-          const left = this.columns.find(x => x.name === right.name);
+          const left = this.columns.find(x => x.name.toUpperCase()  === right.name.toUpperCase());
           if (!left) {
             DomainEvent.getInstance().raise('diff-found', new DiffOfTable({left: this, right: other}));
             DomainEvent.getInstance().raise('diff-found', new DiffOfTableColumn({left: null, right}));
@@ -54,7 +54,7 @@ export class Table implements IComparable {
 
       this.keys.forEach(
         left => {
-          const right = other.keys.find(x => x.name === left.name);
+          const right = other.keys.find(x => x.name.toUpperCase()  === left.name.toUpperCase());
 
           if (left.findDiff(right)) {
             DomainEvent.getInstance().raise('diff-found', new DiffOfTable({left: this, right: other}));
@@ -66,7 +66,7 @@ export class Table implements IComparable {
 
       other.keys.forEach(
         right => {
-          const left = this.keys.find(x => x.name === right.name);
+          const left = this.keys.find(x => x.name.toUpperCase()  === right.name.toUpperCase());
           if (!left) {
             DomainEvent.getInstance().raise('diff-found', new DiffOfTable({left: this, right: other}));
             DomainEvent.getInstance().raise('diff-found', new DiffOfTableKey({left: null, right}));

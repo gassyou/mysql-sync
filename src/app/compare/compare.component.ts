@@ -79,4 +79,15 @@ export class CompareComponent implements OnInit {
     }
   }
 
+
+  update(db:'left'|'right',sql:string) {
+    this.compare.doUpdate(db, sql).subscribe(
+      (result) => {
+        if(result.results) {
+          this.message.success(result.results.message);
+        }
+      }
+    );
+  }
+
 }
