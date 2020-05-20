@@ -81,6 +81,11 @@ export class CompareComponent implements OnInit {
 
 
   update(db:'left'|'right',sql:string) {
+
+    if(!sql) {
+      this.message.warning('没有SQL可以被执行!');
+    }
+
     this.compare.doUpdate(db, sql).subscribe(
       (result) => {
         if(result.results) {
