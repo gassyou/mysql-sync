@@ -1,6 +1,11 @@
 
  <ng-container *ngIf="percent === 100">
-  <div style="text-align: center; color:#4e4e4e;font-weight:bold;"><a (click)="redo()">[重新比较]</a></div>
+  <div style="text-align: center; color:#4e4e4e;font-weight:bold;">
+    <a (click)="redo()">[重新比较]</a>
+    <a *ngIf="!compare.keyCompareNeed" style="margin-left: 8px;" (click)="compareKey()">[比较Key]</a>
+    <a *ngIf="!compare.functionCompareNeed" style="margin-left: 8px;" (click)="compareFunction()">[比较Function]</a>
+    <a *ngIf="!compare.viewCompareNeed" style="margin-left: 8px;" (click)="compareView()">[比较View]</a>
+  </div>
   <div *ngFor="let header of diffItems" >
       <div nz-row class="header"
         [ngClass]="[selectedId===header.id?'active':'',header.styleClass]"

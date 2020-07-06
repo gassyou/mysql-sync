@@ -14,6 +14,7 @@ export class DbConnectionComponent implements OnInit {
 
   keyCompareNeed = false;
   functionCompareNeed = false;
+  viewCompareNeed = false;
 
   constructor(
     public compare: CompareService,
@@ -33,6 +34,7 @@ export class DbConnectionComponent implements OnInit {
     } else {
       this.compare.keyCompareNeed = this.keyCompareNeed;
       this.compare.functionCompareNeed = this.functionCompareNeed;
+      this.compare.viewCompareNeed = this.viewCompareNeed;
       this.router.navigate(['compare']);
     }
   }

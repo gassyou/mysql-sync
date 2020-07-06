@@ -71,6 +71,24 @@ export class DiffItemComponent implements OnInit {
     this.compare.doComparetion();
   }
 
+  compareKey() {
+    this.diffItems=[];
+    this.compare.keyCompareOnly = true;
+    this.compare.doComparetion();
+  }
+
+  compareFunction() {
+    this.diffItems=[];
+    this.compare.functionCompareOnly = true;
+    this.compare.doComparetion();
+  }
+
+  compareView() {
+    this.diffItems = [];
+    this.compare.viewCompareOnly = true;
+    this.compare.doComparetion();
+  }
+
   onItemClick(diff: DiffItemViewModel) {
     this.selectedId = diff.id;
     this.diffItems.forEach(x => {

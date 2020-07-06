@@ -34,7 +34,13 @@ export class CompareService {
 
 
   public keyCompareNeed = false;
+  public keyCompareOnly = false; // one time
+
   public functionCompareNeed = false;
+  public functionCompareOnly = false; // one time
+
+  public viewCompareNeed = false;
+  public viewCompareOnly = false; // one time
 
   constructor(
     public db: DbService
@@ -136,11 +142,22 @@ export class CompareService {
         rightFunctions = [];
         leftViews = [];
         rightViews = [];
+
+        this.keyCompareOnly = false;
+        this.functionCompareOnly = false;
+        this.viewCompareOnly = false;
+
         console.log(new Date());
     });
   }
 
   allTables(conn: Connection, schema: string): Observable<Table[]> {
+
+
+    if (this.functionCompareOnly || this.viewCompareOnly) {
+      return of([]);
+    }
+
     const allTables$ = this.db.query(conn,this.db.ALL_TABLES_SQL).pipe(
       map(data =>{
         const tables = [];
@@ -158,16 +175,22 @@ export class CompareService {
     );
   }
 
+
   tableFactory(conn: Connection, schema: string, tableName: string): Observable<Table> {
 
-    const columnsObservable = this.columnFactory(conn, tableName);
-    const keysObservable = this.keyCompareNeed ? this.allKeyFactory(conn, schema,tableName) : of([]);
+    const columnsObservable = this.keyCompareOnly
+                            ? of([]) : this.columnFactory(conn, tableName);
+
+    const keysObservable = this.keyCompareNeed || this.keyCompareOnly
+                            ? this.allKeyFactory(conn, schema,tableName): of([]);
+
     const ddlObservable = this.getTableDDL(conn,tableName);
+
     return zip(columnsObservable,keysObservable,ddlObservable).pipe(
       map(([columns,keys,ddl])=>{
 
         if(this.counter >= 45) {
-          this.counter = this.counter + 0.03
+          this.counter = this.counter + 0.02
         } else {
           this.counter++
         }
@@ -348,17 +371,15 @@ export class CompareService {
 
   functionFactory(conn: Connection,schema: string): Observable<TableFunction[]> {
 
-    if(!this.functionCompareNeed) {
+    const query = String.Format(this.db.ALL_FUN_SQL,schema);
+
+    if(!this.functionCompareNeed && (this.viewCompareOnly || this.keyCompareOnly)) {
       return of([]);
     }
-
-
-    const query = String.Format(this.db.ALL_FUN_SQL,schema);
 
     return this.db.query(conn,query).pipe(
       map( data=>{
         const funcitons: TableFunction[] = [];
-
         data.results.map( x=> {
           funcitons.push(new TableFunction({
             name: x['name'],
@@ -374,6 +395,10 @@ export class CompareService {
 
   viewFactory(conn: Connection, schema: string): Observable<TableView[]> {
     const query = String.Format(this.db.ALL_VIEW_SQL,schema);
+
+    if(!this.viewCompareNeed && (this.functionCompareOnly || this.keyCompareOnly)) {
+      return of([]);
+    }
 
     return this.db.query(conn,query).pipe(
       map(data=>{
