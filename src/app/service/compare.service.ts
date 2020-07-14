@@ -373,7 +373,7 @@ export class CompareService {
 
     const query = String.Format(this.db.ALL_FUN_SQL,schema);
 
-    if(!this.functionCompareNeed && (this.viewCompareOnly || this.keyCompareOnly)) {
+    if(!this.functionCompareNeed && !this.functionCompareOnly) {
       return of([]);
     }
 
@@ -396,7 +396,7 @@ export class CompareService {
   viewFactory(conn: Connection, schema: string): Observable<TableView[]> {
     const query = String.Format(this.db.ALL_VIEW_SQL,schema);
 
-    if(!this.viewCompareNeed && (this.functionCompareOnly || this.keyCompareOnly)) {
+    if(!this.viewCompareNeed && !this.viewCompareOnly) {
       return of([]);
     }
 
