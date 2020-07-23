@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, HostListener } from '@angular/core';
 import { DiffItemViewModel } from './diff-item-view-model';
 import { DomainEvent } from './../../common/domain-event';
 import { CompareService } from './../../service/compare.service';
@@ -33,13 +33,16 @@ export class DiffItemComponent implements OnInit {
         id: this.getDiffItemIds(e),
         diff: e,
         isSelected: false,
-        styleClass: 'mouseout',
-        items: []
+        items: [],
+        isLeaf: true,
+        isItemsVisible: false
       };
 
       if(e.type !== DiffType.COLUMN && e.type !== DiffType.KEY) {
         this.diffItems.push(diffItem);
+        diffItem.isLeaf = false;
       }  else {
+        diffItem.isLeaf = true;
         this.diffItems.some(x=>{
           if(x.diff.name === e.tableName) {
             x.items.push(diffItem);
@@ -90,6 +93,13 @@ export class DiffItemComponent implements OnInit {
   }
 
   onItemClick(diff: DiffItemViewModel) {
+
+    if(diff.isLeaf) {
+      this.getParent(diff).isItemsVisible = true;
+    }
+
+    diff.isItemsVisible = !diff.isItemsVisible;
+
     this.selectedId = diff.id;
     this.diffItems.forEach(x => {
       if(x.id === diff.id) {
@@ -142,6 +152,107 @@ export class DiffItemComponent implements OnInit {
       return true;
     } else {
       return false;
+    }
+  }
+
+  @HostListener('document:keydown', ['$event'])
+  handleKeypress(event: KeyboardEvent) {
+
+    if(!this.diffItems || (event.key !== 'ArrowUp' && event.key !== 'ArrowDown')) {
+      return;
+    }
+
+    let diff : DiffItemViewModel = null;
+    if(this.selectedId) {
+
+      let currentDiff: DiffItemViewModel = null;
+      this.diffItems.some(x=>{
+        if(x.id === this.selectedId) {
+          currentDiff = x;
+        } else if(x.items) {
+          currentDiff = x.items.find(y=>y.id === this.selectedId);
+        }
+
+        if(currentDiff) {
+          return true;
+        } else {
+          return false;
+        }
+      });
+
+      if(currentDiff.isLeaf) {
+        const parent = this.getParent(currentDiff);
+        if(event.key === 'ArrowDown') {
+          diff = this.getNextItem(currentDiff.id,parent.items);
+          if(!diff) {
+            diff = this.getNextItem(parent.id,this.diffItems);
+          }
+        }
+
+        if(event.key === 'ArrowUp') {
+          diff = this.getPrevItem(currentDiff.id,parent.items);
+          if(!diff) {
+            diff = parent;
+          }
+        }
+      } else {
+        if(event.key === 'ArrowDown') {
+          if(currentDiff.items && currentDiff.items.length>0) {
+            diff = currentDiff.items[0];
+          } else {
+            diff = this.getNextItem(currentDiff.id, this.diffItems);
+          }
+        }
+
+        if(event.key === "ArrowUp") {
+          diff = this.getPrevItem(currentDiff.id,this.diffItems);
+        }
+      }
+    } else {
+      diff = this.diffItems[0];
+    }
+
+    if(!diff) {
+      return;
+    }
+
+    this.onItemClick(diff);
+  }
+
+  getParent(diff: DiffItemViewModel): DiffItemViewModel {
+    if(diff.isLeaf) {
+      const parentId = diff.id.split("-")[0];
+      return this.diffItems.find(x=>x.id === parentId);
+    } else {
+      return null;
+    }
+  }
+
+  getNextItem(currentId: string, list:DiffItemViewModel[]): DiffItemViewModel {
+
+    if(!list) {
+      return null;
+    }
+
+    const currentIndex = list.findIndex(x=> x.id === currentId);
+    if(currentIndex < list.length - 1) {
+      return list[currentIndex + 1];
+    } else {
+      return null;
+    }
+  }
+
+  getPrevItem(currentId: string, list:DiffItemViewModel[]): DiffItemViewModel {
+
+    if(!list) {
+      return null;
+    }
+
+    const currentIndex = list.findIndex(x=> x.id === currentId);
+    if(currentIndex > 0) {
+      return list[currentIndex - 1];
+    } else {
+      return null;
     }
   }
 
