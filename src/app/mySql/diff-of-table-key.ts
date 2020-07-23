@@ -13,9 +13,8 @@ export class DiffOfTableKey implements IDifference {
   public readonly right: TableKey;
 
   private DROP_PRIMARY_KEY = `ALTER TABLE {0} DROP ${TableKeyType.PRIMARY_KEY};<br/>`;
-  private DROP_FOREIGN_KEY = `ALTER TABLE {0} DROP ${TableKeyType.FOREIGN_KEY} {1};<br/>`;
-  private DROP_KEY = `ALTER TABLE {0} DROP INDEX {1};<br/>`;
-
+  private DROP_FOREIGN_KEY = `ALTER TABLE {0} DROP ${TableKeyType.FOREIGN_KEY} \`{1}\`;<br/>`;
+  private DROP_KEY = `ALTER TABLE {0} DROP INDEX  \`{1}\`;<br/>`;
   private ADD_KEY = `ALTER TABLE {0} ADD {1};<br/>`;
 
   public constructor(val = {}) {

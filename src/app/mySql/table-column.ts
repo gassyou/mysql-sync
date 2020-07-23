@@ -20,7 +20,7 @@ export class TableColumn implements IComparable {
             ${this.dataType}
             ${this.autoIncrement ? 'AUTO_INCREMENT' : ''}
             ${this.nullable ? 'NULL' : 'NOT NULL'}
-            ${this.defaultValue ? 'DEFAULT '+this.defaultValue : '' }
+            ${this.defaultValue ? 'DEFAULT \''+ this.defaultValue + '\'' : '' }
             ${this.comment ? 'COMMENT \'' + this.comment + '\'' : ''}`;
   }
 

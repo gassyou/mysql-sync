@@ -10,26 +10,31 @@ export class TableKey implements IComparable {
   public readonly referenceColumns: string;
   public readonly keyType: TableKeyType;
 
+  private keyColumnsWithQuote: string[] = [];
+
   public constructor(val = {}) {
     Object.assign(this, val);
+    this.keyColumnsWithQuote = this.keyColumns.map(x=>{
+      return `\`${x}\``;
+    });
   }
 
   public toDDLString(): string {
 
     if (this.keyType === TableKeyType.PRIMARY_KEY) {
-      return `${TableKeyType.PRIMARY_KEY } (  ${this.keyColumns.join(',')} )`;
+      return `${TableKeyType.PRIMARY_KEY } ( ${this.keyColumnsWithQuote.join(',')} )`;
     }
 
     if (this.keyType === TableKeyType.UNIQUE_KEY) {
-      return `${TableKeyType.UNIQUE_KEY} ${this.name} ( ${this.keyColumns.join(',')} )`;
+      return `${TableKeyType.UNIQUE_KEY} \`${this.name}\` ( ${this.keyColumnsWithQuote.join(',')} )`;
     }
 
     if (this.keyType === TableKeyType.INDEX_KEY) {
-      return `${TableKeyType.INDEX_KEY} ${this.name} ( ${this.keyColumns.join(',')} )`;
+      return `${TableKeyType.INDEX_KEY} \`${this.name}\` ( ${this.keyColumnsWithQuote.join(',')} )`;
     }
 
     if (this.keyType === TableKeyType.FOREIGN_KEY) {
-      return `CONSTRAINT ${this.name} ${TableKeyType.FOREIGN_KEY} ( ${this.keyColumns.join(',')} )
+      return `CONSTRAINT \`${this.name}\` ${TableKeyType.FOREIGN_KEY} ( ${this.keyColumnsWithQuote.join(',')} )
               REFERENCES ${this.referenceTable} ( ${this.referenceColumns} )`;
     }
 
@@ -44,5 +49,4 @@ export class TableKey implements IComparable {
     }
     return false;
   }
-
 }

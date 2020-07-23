@@ -22,7 +22,7 @@ export class DiffOfTableColumn implements IDifference {
 
     if (this.left) {
       if (!this.right) {
-        returnValue = `alter table ${this.left.tableName} drop column ${this.left.name}`;
+        returnValue = `alter table ${this.left.tableName} drop column \`${this.left.name}\``;
       } else {
         returnValue = `alter table ${this.right.tableName} modify column ${this.right.toDDLString()}`;
       }
@@ -40,7 +40,7 @@ export class DiffOfTableColumn implements IDifference {
 
     if (this.right) {
       if (!this.left) {
-        returnValue = `alter table ${this.right.tableName} drop column ${this.right.name}`;
+        returnValue = `alter table ${this.right.tableName} drop column \`${this.right.name}\``;
       } else {
         returnValue = `alter table ${this.left.tableName} modify column ${this.left.toDDLString()}`;
       }
