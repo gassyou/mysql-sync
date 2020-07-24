@@ -86,13 +86,16 @@ export class CompareComponent implements OnInit {
       this.message.warning('没有SQL可以被执行!');
     }
 
-    this.compare.doUpdate(db, sql).subscribe(
-      (result) => {
-        if(result.results) {
-          this.message.success(result.results.message);
+    sql.split('<br/>').forEach(s=>{
+      this.compare.doUpdate(db, s).subscribe(
+        (result) => {
+          if(result.results) {
+            this.message.success(result.results.message);
+          }
         }
-      }
-    );
+      );
+    });
+
   }
 
 }
