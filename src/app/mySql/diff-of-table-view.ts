@@ -3,7 +3,6 @@ import { TableView } from './table-view';
 
 export class DiffOfTableView implements IDifference {
 
-
   public readonly name?: string;
   public readonly tableName?: string;
   public readonly type?: DiffType;
@@ -21,7 +20,7 @@ export class DiffOfTableView implements IDifference {
   syncToLeftSql(): string {
     let returnValue = '';
     if (this.left) {
-      returnValue = `drop ${this.left.name};<br/>`;
+      returnValue = `drop view ${this.left.name};<br/>`;
     }
 
     if (this.right) {
@@ -34,7 +33,7 @@ export class DiffOfTableView implements IDifference {
   syncToRightSql(): string {
     let returnValue = '';
     if (this.right) {
-      returnValue = `drop ${this.right.name};<br/>`;
+      returnValue = `drop view ${this.right.name};<br/>`;
     }
 
     if (this.left) {
