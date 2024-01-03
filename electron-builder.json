@@ -26,13 +26,13 @@
     ]
   },
   "mac": {
-    "icon": "dist",
+    "icon": "dist/favicon-mac.png",
     "target": [
       "dmg"
     ]
   },
   "linux": {
-    "icon": "dist",
+    "icon": "dist/favicon.png",
     "target": [
       "AppImage"
     ]

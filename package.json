@@ -81,6 +81,7 @@
   },
   "dependencies": {
     "mysql": "2.17.1",
+    "nan": "^2.14.2",
     "ng-zorro-antd": "^8.5.2",
     "tslint": "^5.20.1",
     "typescript-string-operations": "^1.3.1"

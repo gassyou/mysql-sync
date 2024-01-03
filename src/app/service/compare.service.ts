@@ -400,6 +400,8 @@ export class CompareService {
       return of([]);
     }
 
+    const reg:RegExp = new RegExp(`\`${schema}\`.`,'g');
+
     return this.db.query(conn,query).pipe(
       map(data=>{
         const views: TableView[] = [];
@@ -407,7 +409,7 @@ export class CompareService {
         data.results.map( x=> {
           views.push(new TableView({
             name: x['TABLE_NAME'],
-            viewBody: x['VIEW_DEFINITION'],
+            viewBody: x['VIEW_DEFINITION'] ? x['VIEW_DEFINITION'].replace(reg,'') : '',
           }))
         });
         return views;

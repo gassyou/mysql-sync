@@ -19,12 +19,8 @@ export class DiffOfTableView implements IDifference {
 
   syncToLeftSql(): string {
     let returnValue = '';
-    if (this.left) {
-      returnValue = `drop view ${this.left.name};<br/>`;
-    }
-
     if (this.right) {
-      returnValue = returnValue + `CREATE VIEW ${this.right.name} AS ` + this.right.toDDLString();
+      returnValue = `CREATE OR REPLACE VIEW ${this.right.name} AS ` + this.right.toDDLString();
     }
 
     return returnValue;
@@ -32,12 +28,8 @@ export class DiffOfTableView implements IDifference {
 
   syncToRightSql(): string {
     let returnValue = '';
-    if (this.right) {
-      returnValue = `drop view ${this.right.name};<br/>`;
-    }
-
     if (this.left) {
-      returnValue = returnValue + `CREATE VIEW ${this.left.name} AS ` + this.left.toDDLString();
+      returnValue = `CREATE OR REPLACE VIEW ${this.left.name} AS ` + this.left.toDDLString();
     }
 
     return returnValue;
