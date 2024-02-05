@@ -23,7 +23,7 @@ function createWindow() {
     electron_1.Menu.setApplicationMenu(null);
     if (serve) {
         require('electron-reload')(__dirname, {
-            electron: require(__dirname + "/node_modules/electron")
+            electron: require("".concat(__dirname, "/node_modules/electron"))
         });
         win.loadURL('http://localhost:4201');
     }
